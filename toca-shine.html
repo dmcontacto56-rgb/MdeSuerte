@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TOCA – Shine Effect</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, DPR = devicePixelRatio || 1;
+let segments = [];
+let ripples = [];
+let mouse = { x: -9999, y: -9999 };
+
+function resize() {
+  W = canvas.width = window.innerWidth * DPR;
+  H = canvas.height = window.innerHeight * DPR;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  build();
+}
+
+function build() {
+  segments = [];
+
+  const off = document.createElement('canvas');
+  off.width = W; off.height = H;
+  const oc = off.getContext('2d');
+
+  oc.font = `900 100px Arial Black, Impact, sans-serif`;
+  let fs = Math.floor(W * 0.88 / (oc.measureText('TOCA').width / 100));
+  fs = Math.min(fs, H * 0.78);
+
+  oc.font = `900 ${fs}px Arial Black, Impact, sans-serif`;
+  oc.textAlign = 'center';
+  oc.textBaseline = 'middle';
+  oc.fillStyle = '#fff';
+  oc.fillText('TOCA', W / 2, H / 2);
+
+  const data = oc.getImageData(0, 0, W, H).data;
+
+  const vpx = W / 2;
+  const vpy = H / 2;
+  const numRays = 360;
+  const segLen = Math.max(3, W * 0.009);
+  const gap = segLen * 0.5;
+  const stride = segLen + gap;
+
+  for (let i = 0; i < numRays; i++) {
+    const angle = (i / numRays) * Math.PI * 2;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const maxR = Math.sqrt(W * W + H * H) / 2;
+
+    let runs = [];
+    let runStart = -1;
+
+    for (let d = 2; d < maxR; d += 2) {
+      const px = Math.round(vpx + cos * d);
+      const py = Math.round(vpy + sin * d);
+      if (px < 0 || px >= W || py < 0 || py >= H) {
+        if (runStart >= 0) { runs.push([runStart, d]); runStart = -1; }
+        break;
+      }
+      const on = data[(py * W + px) * 4 + 3] > 100;
+      if (on && runStart < 0) runStart = d;
+      else if (!on && runStart >= 0) { runs.push([runStart, d]); runStart = -1; }
+    }
+    if (runStart >= 0) runs.push([runStart, maxR]);
+
+    for (let [r0, r1] of runs) {
+      for (let d = r0; d < r1 - segLen * 0.3; d += stride) {
+        const actualLen = Math.min(segLen, r1 - d);
+        if (actualLen < 2) continue;
+        const midD = d + actualLen / 2;
+        const cx = vpx + cos * midD;
+        const cy = vpy + sin * midD;
+        segments.push({
+          cx, cy,
+          ocx: cx, ocy: cy,
+          angle, midD, actualLen,
+          thickness: Math.max(2, W * 0.005),
+          vr: 0
+        });
+      }
+    }
+  }
+}
+
+function addRipple(ex, ey) {
+  ripples.push({ x: ex * DPR, y: ey * DPR, t: 0, maxT: 55 });
+}
+
+function getPos(e) {
+  if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  return { x: e.clientX, y: e.clientY };
+}
+
+canvas.addEventListener('mousemove', e => {
+  const p = getPos(e); mouse.x = p.x * DPR; mouse.y = p.y * DPR;
+});
+canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+canvas.addEventListener('click', e => { const p = getPos(e); addRipple(p.x, p.y); });
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const p = getPos(e); mouse.x = p.x * DPR; mouse.y = p.y * DPR; addRipple(p.x, p.y);
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const p = getPos(e); mouse.x = p.x * DPR; mouse.y = p.y * DPR;
+}, { passive: false });
+
+function tick() {
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    ripples[i].t++;
+    if (ripples[i].t > ripples[i].maxT) ripples.splice(i, 1);
+  }
+  const vpx = W / 2, vpy = H / 2;
+  for (let s of segments) {
+    const curD = Math.sqrt((s.cx - vpx) ** 2 + (s.cy - vpy) ** 2);
+    let fRadial = (s.midD - curD) * 0.15;
+
+    const ddx = s.ocx - mouse.x, ddy = s.ocy - mouse.y;
+    const hd = Math.sqrt(ddx * ddx + ddy * ddy);
+    if (hd < W * 0.12 && hd > 1) fRadial += (1 - hd / (W * 0.12)) * 20;
+
+    for (let rp of ripples) {
+      const rdx = s.ocx - rp.x, rdy = s.ocy - rp.y;
+      const rd = Math.sqrt(rdx * rdx + rdy * rdy);
+      const waveR = (rp.t / rp.maxT) * W * 0.9;
+      const front = Math.abs(rd - waveR);
+      if (front < W * 0.1) {
+        const env = 1 - front / (W * 0.1);
+        const decay = Math.sin((rp.t / rp.maxT) * Math.PI);
+        fRadial += env * decay * 55;
+      }
+    }
+
+    s.vr = (s.vr + fRadial) * 0.58;
+    const newD = curD + s.vr;
+    s.cx = vpx + Math.cos(s.angle) * newD;
+    s.cy = vpy + Math.sin(s.angle) * newD;
+  }
+}
+
+function draw() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+  for (let s of segments) {
+    const dx = s.cx - s.ocx, dy = s.cy - s.ocy;
+    const alpha = Math.min(1, 0.9 + Math.sqrt(dx * dx + dy * dy) * 0.008);
+    ctx.save();
+    ctx.translate(s.cx, s.cy);
+    ctx.rotate(s.angle);
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.beginPath();
+    ctx.roundRect(-s.actualLen / 2, -s.thickness / 2, s.actualLen, s.thickness, s.thickness / 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  requestAnimationFrame(() => { tick(); draw(); });
+}
+
+window.addEventListener('resize', resize);
+resize();
+draw();
+</script>
+</body>
+</html>
