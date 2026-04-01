@@ -30,6 +30,9 @@
     nav ul { list-style:none; display:flex; gap:2.5rem; }
     nav ul a { color:var(--fg); text-decoration:none; font-size:.65rem; letter-spacing:.25em; text-transform:uppercase; }
     nav ul a:hover { color:var(--accent); }
+    
+  nav .logo { pointer-events: none; }
+nav .logo.visible { pointer-events: auto; }
 
     /* HERO — grid 50/50 */
     #hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; position:relative; overflow:hidden; }
@@ -522,6 +525,30 @@ new p5(function(p) {
     revealCanvas.resizeCanvas(p.width, p.height);
   };
 }, document.getElementById('rain-canvas'));
+
+  // ── TRÉBOL: oculto durante scroll, visible solo en contacto ──
+const logoEl = document.querySelector('nav .logo');
+
+const contactObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      logoEl.style.opacity = '1';
+      logoEl.style.transform = 'scale(1)';
+    } else {
+      logoEl.style.opacity = '0';
+      logoEl.style.transform = 'scale(0.7)';
+    }
+  });
+}, { threshold: 0.2 });
+
+contactObserver.observe(document.getElementById('contact'));
+
+// Ocultar al inicio también
+logoEl.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+logoEl.style.opacity = '0';
+logoEl.style.transform = 'scale(0.7)';
+
+  
 </script>
 </body>
 </html>
