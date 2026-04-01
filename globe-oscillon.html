@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Globe × Bat × Oscillon</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #050508; overflow: hidden; cursor: none; }
+    canvas { position: fixed; inset: 0; display: block; }
+    #cursor { position: fixed; pointer-events: none; z-index: 20; width: 5px; height: 5px; background: rgba(255,255,255,0.7); border-radius: 50%; transform: translate(-50%,-50%); }
+    #hint { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); font-family: 'Courier New', monospace; font-size: .58rem; letter-spacing: .35em; text-transform: uppercase; color: rgba(255,255,255,.13); pointer-events: none; }
+    #lbl { position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); font-family: 'Courier New', monospace; font-size: .6rem; letter-spacing: .45em; text-transform: uppercase; color: rgba(255,255,255,.3); pointer-events: none; opacity: 0; transition: opacity .4s; }
+  </style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="hint">Click — metamorfosis</div>
+<div id="lbl">Globo</div>
+<canvas id="c"></canvas>
+<script>
+(function () {
+  const canvas = document.getElementById('c');
+  const ctx    = canvas.getContext('2d');
+  const cur    = document.getElementById('cursor');
+  const lbl    = document.getElementById('lbl');
+  const DPR    = Math.min(devicePixelRatio || 1, 2);
+  const mobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  let W, H, cx, cy;
+  let mouse = { x: -9999, y: -9999 }, mouseDist = 9999;
+  let stateIdx = 0;
+  const LABELS = ['Globo', 'Murciélago', 'Oscilón'];
+
+  let flapAngle = 0, flapSpeed = 0.04;
+  let globeAngle = 0;
+
+  // ── Oscilón — Lissajous / CRT standing wave figures ──
+  // The oscillon shape is defined parametrically and sampled into points.
+  // Mouse proximity modulates: frequency ratio, phase, and warp — just like
+  // a real CRT oscillon reacts to electromagnetic field changes.
+
+  // Oscillon parameters — driven by mouse/system state at build time,
+  // but the live targets are recomputed per-frame in loop().
+  // We pre-generate a fixed set of anchor indices on the curve.
+  const OSC_N = mobile ? 420 : 900; // number of particles on the curve
+
+  // ── Pixel bat — high contrast, clear silhouette ──
+  function R(c,r,w,h,cr,cg,cb){
+    const o=[];
+    for(let i=0;i<w;i++) for(let j=0;j<h;j++) o.push({c:c+i-24,r:r+j-16,cr,cg,cb});
+    return o;
+  }
+  const BAT = [
+    ...R(20,12, 8,10, 220,220,230),
+    ...R(19,9,  10,5, 210,210,225),
+    ...R(18,6,  3,4,  180,160,255),
+    ...R(27,6,  3,4,  180,160,255),
+    ...R(21,11, 2,2,  255,40,40),
+    ...R(25,11, 2,2,  255,40,40),
+    ...R(0,7,   6,2,  190,140,255),
+    ...R(2,9,   6,2,  190,140,255),
+    ...R(4,11,  7,2,  170,120,240),
+    ...R(6,13,  7,2,  170,120,240),
+    ...R(8,15,  7,2,  150,100,220),
+    ...R(10,17, 6,2,  130,80,200),
+    ...R(6,9,   6,2,  80,50,140),
+    ...R(8,11,  5,2,  80,50,140),
+    ...R(10,13, 5,2,  80,50,140),
+    ...R(42,7,  6,2,  190,140,255),
+    ...R(40,9,  6,2,  190,140,255),
+    ...R(37,11, 7,2,  170,120,240),
+    ...R(35,13, 7,2,  170,120,240),
+    ...R(33,15, 7,2,  150,100,220),
+    ...R(32,17, 6,2,  130,80,200),
+    ...R(36,9,  6,2,  80,50,140),
+    ...R(35,11, 5,2,  80,50,140),
+    ...R(33,13, 5,2,  80,50,140),
+    ...R(0,7,   2,2,  220,180,255),
+    ...R(46,7,  2,2,  220,180,255),
+    ...R(20,18, 8,3,  160,155,180),
+    ...R(20,21, 3,2,  130,125,150),
+    ...R(25,21, 3,2,  130,125,150),
+  ];
+
+  // Targets
+  let globeT = [], batT = [], oscT = [];
+  let particles = [];
+
+  // Oscillon CRT — parametric Lissajous with layered harmonics.
+  // freqX, freqY are the "tuning knobs"; phase shifts the figure;
+  // warp adds a slow secondary oscillation that makes the figure breathe.
+  // All driven live from mouse + time in loop().
+  // oscT stores the INITIAL rest positions; live targets are computed per-frame.
+  function buildOscillon() {
+    oscT = [];
+    const OR = Math.min(W, H) * 0.27;
+    // We use 3 superimposed Lissajous loops to get that multi-loop CRT look
+    const configs = [
+      { fx: 3, fy: 2, ph: 0,           amp: 1.00, weight: 0.50 },
+      { fx: 5, fy: 4, ph: Math.PI/4,   amp: 0.55, weight: 0.30 },
+      { fx: 7, fy: 6, ph: Math.PI/3,   amp: 0.30, weight: 0.20 },
+    ];
+    for (let i = 0; i < OSC_N; i++) {
+      const t = (i / OSC_N) * Math.PI * 2;
+      // Blend three harmonics weighted
+      let ox = 0, oy = 0;
+      configs.forEach(cfg => {
+        ox += Math.sin(cfg.fx * t + cfg.ph) * OR * cfg.amp * cfg.weight;
+        oy += Math.sin(cfg.fy * t)          * OR * cfg.amp * cfg.weight;
+      });
+      // Assign a phosphor hue: CRT green-cyan band, slight warmth near center
+      const dist = Math.sqrt(ox*ox + oy*oy) / OR;
+      oscT.push({
+        x: cx + ox,
+        y: cy + oy,
+        t,               // parameter — used for live recomputation
+        dist,            // 0 = center, 1 = edge — drives color temperature
+        cfgIdx: i % configs.length,
+      });
+    }
+  }
+
+  function build() {
+    // GLOBE
+    globeT = [];
+    const GR = Math.min(W,H) * 0.27;
+    const gs = mobile ? 0.19 : 0.088;
+    for (let lat=-Math.PI/2; lat<=Math.PI/2; lat+=gs) {
+      const cl = Math.cos(lat);
+      const ls = cl<0.05 ? Math.PI*2 : gs/cl;
+      for (let lon=0; lon<Math.PI*2; lon+=ls) {
+        globeT.push({
+          x: cx + GR*cl*Math.sin(lon),
+          y: cy + GR*Math.sin(lat),
+          hue: 200 + (lat/Math.PI+.5)*60 + (lon/(Math.PI*2))*40,
+        });
+      }
+    }
+
+    // BAT
+    batT = [];
+    const PS = Math.min(W,H) * 0.016;
+    BAT.forEach(b => batT.push({ x: cx+b.c*PS, y: cy+b.r*PS, r:b.cr, g:b.cg, b:b.cb }));
+
+    // OSCILLON
+    buildOscillon();
+
+    // PARTICLES — use max count
+    const N = Math.max(globeT.length, batT.length, oscT.length);
+    particles = [];
+    for (let i=0; i<N; i++) {
+      particles.push({
+        x: Math.random()*W, y: Math.random()*H,
+        vx:0, vy:0,
+        gi: i % globeT.length,
+        bi: i % batT.length,
+        oi: i % oscT.length,
+        lit: 0,
+        age: Math.random() * Math.PI * 2, // phase offset for shimmer
+      });
+    }
+  }
+
+  function resize() {
+    W = canvas.width  = innerWidth*DPR;
+    H = canvas.height = innerHeight*DPR;
+    canvas.style.width  = innerWidth+'px';
+    canvas.style.height = innerHeight+'px';
+    cx=W/2; cy=H/2;
+    build();
+  }
+
+  function setMouse(x,y) {
+    mouse.x=x*DPR; mouse.y=y*DPR;
+    cur.style.left=x+'px'; cur.style.top=y+'px';
+    const dx=mouse.x-cx, dy=mouse.y-cy;
+    mouseDist=Math.sqrt(dx*dx+dy*dy);
+  }
+  window.addEventListener('mousemove', e=>setMouse(e.clientX,e.clientY));
+  window.addEventListener('mouseleave', ()=>{ mouse.x=-9999; mouseDist=9999; });
+  window.addEventListener('touchmove', e=>{ e.preventDefault(); setMouse(e.touches[0].clientX,e.touches[0].clientY); },{passive:false});
+  window.addEventListener('click', ()=>{
+    stateIdx=(stateIdx+1)%3;
+    lbl.textContent=LABELS[stateIdx];
+    lbl.style.opacity='1';
+    setTimeout(()=>lbl.style.opacity='0',2000);
+  });
+
+  function hslToRgb(h,s,l){
+    const q=l<.5?l*(1+s):l+s-l*s, p=2*l-q;
+    const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+    return {r:f(p,q,h+1/3)*255, g:f(p,q,h)*255, b:f(p,q,h-1/3)*255};
+  }
+
+  const SPRING=0.092, DAMP=0.74, INF_R=130*DPR, PUSH=52*DPR;
+
+  // Oscillon live state — modulated by mouse and time
+  // These evolve continuously, like a CRT being tuned
+  let oscPhase = 0;       // slow phase drift
+  let oscFxMod = 0;       // frequency X modulation (mouse-driven)
+  let oscFyMod = 0;       // frequency Y modulation
+  let oscWarp  = 0;       // secondary harmonic warp strength
+  let oscTwist = 0;       // rotational distortion
+
+  function lissajousXY(t, now, prox) {
+    const OR = Math.min(W, H) * 0.27;
+
+    // Base frequencies — mouse X position shifts ratio (just like tuning a CRT)
+    const mx_norm = mouse.x > 0 ? (mouse.x - cx) / (W * 0.5) : 0;
+    const my_norm = mouse.y > 0 ? (mouse.y - cy) / (H * 0.5) : 0;
+
+    // Target frequency modulations — mouse pulls the figure between Lissajous ratios
+    const targetFxMod = mx_norm * 1.2;
+    const targetFyMod = my_norm * 0.8;
+    const targetWarp  = prox * 0.6;
+    const targetTwist = prox * Math.PI * 0.15;
+
+    oscFxMod += (targetFxMod - oscFxMod) * 0.02;
+    oscFyMod += (targetFyMod - oscFyMod) * 0.02;
+    oscWarp  += (targetWarp  - oscWarp)  * 0.03;
+    oscTwist += (targetTwist - oscTwist) * 0.025;
+    oscPhase += 0.004 + prox * 0.012; // proximity speeds up drift
+
+    // Three superimposed harmonics — the "standing wave" look
+    const fx1 = 3 + oscFxMod;
+    const fy1 = 2 + oscFyMod;
+    const fx2 = 5 + oscFxMod * 0.5;
+    const fy2 = 4 + oscFyMod * 0.5;
+    const fx3 = 7;
+    const fy3 = 6;
+
+    const ph1 = oscPhase;
+    const ph2 = oscPhase * 1.3 + Math.PI / 4;
+    const ph3 = oscPhase * 0.7 + Math.PI / 3;
+
+    // Warp: secondary slow oscillation adds the "breathing" instability
+    const warpX = Math.sin(now * 0.00031 + t * 0.5) * OR * 0.08 * oscWarp;
+    const warpY = Math.cos(now * 0.00041 + t * 0.7) * OR * 0.08 * oscWarp;
+
+    let ox = Math.sin(fx1*t + ph1)*OR*0.50 + Math.sin(fx2*t + ph2)*OR*0.28 + Math.sin(fx3*t + ph3)*OR*0.15 + warpX;
+    let oy = Math.sin(fy1*t + ph1)*OR*0.50 + Math.sin(fy2*t + ph2)*OR*0.28 + Math.sin(fy3*t + ph3)*OR*0.15 + warpY;
+
+    // Rotational twist — mouse proximity spins the whole figure slightly
+    const cosT = Math.cos(oscTwist), sinT = Math.sin(oscTwist);
+    const rx = ox*cosT - oy*sinT;
+    const ry = ox*sinT + oy*cosT;
+
+    return { x: cx + rx, y: cy + ry };
+  }
+
+  function loop() {
+    const now = Date.now();
+    globeAngle += 0.0018;
+    const prox = Math.max(0,1-mouseDist/(240*DPR));
+    flapSpeed += (0.036+prox*0.20 - flapSpeed)*0.06;
+    flapAngle += flapSpeed;
+
+    ctx.fillStyle='#050508';
+    ctx.fillRect(0,0,W,H);
+
+    const breath = 1+Math.sin(now*0.0007)*0.014;
+
+    for (let i=0; i<particles.length; i++) {
+      const p  = particles[i];
+      const gt = globeT[p.gi];
+      const bt = batT[p.bi];
+      const ot = oscT[p.oi];
+
+      // Globe target — rotates
+      const gdx=gt.x-cx, gdy=gt.y-cy;
+      const gTx=cx+gdx*Math.cos(globeAngle)*breath;
+      const gTy=cy+gdy*breath;
+
+      // Bat target — wings flap
+      const bDist=Math.abs(bt.x-cx)/(W*0.18);
+      const bTx=bt.x;
+      const bTy=bt.y + Math.sin(flapAngle)*bDist*26*DPR;
+
+      // Oscillon target — live parametric position, recomputed from t each frame
+      // Each particle tracks a point on the living Lissajous curve
+      const oPos = lissajousXY(ot.t, now, prox);
+      const oTx  = oPos.x;
+      const oTy  = oPos.y;
+
+      // Pick target by state
+      let tx, ty;
+      if      (stateIdx===0) { tx=gTx; ty=gTy; }
+      else if (stateIdx===1) { tx=bTx; ty=bTy; }
+      else                   { tx=oTx; ty=oTy; }
+
+      // Physics
+      p.vx=(p.vx+(tx-p.x)*SPRING)*DAMP;
+      p.vy=(p.vy+(ty-p.y)*SPRING)*DAMP;
+
+      // Mouse push
+      const mdx=p.x-mouse.x, mdy=p.y-mouse.y;
+      const md=Math.sqrt(mdx*mdx+mdy*mdy);
+      let lit=0;
+      if(md<INF_R && md>0.5){
+        const t=1-md/INF_R;
+        p.vx+=(mdx/md)*t*t*t*PUSH*0.12;
+        p.vy+=(mdy/md)*t*t*t*PUSH*0.12;
+        lit=t*t;
+      }
+      p.lit+=(lit-p.lit)*0.1;
+
+      p.x+=p.vx; p.y+=p.vy;
+
+      // Color per state
+      let r,g,b,a;
+      if (stateIdx===0) {
+        const hue=(gt.hue+p.lit*120)%360;
+        const lv=0.50+p.lit*0.35;
+        const c=hslToRgb(hue/360,0.85,lv);
+        r=c.r; g=c.g; b=c.b; a=0.65+p.lit*0.35;
+      } else if (stateIdx===1) {
+        r=bt.r+(255-bt.r)*p.lit*0.7;
+        g=bt.g+(255-bt.g)*p.lit*0.5;
+        b=bt.b+(255-bt.b)*p.lit*0.6;
+        a=0.90+p.lit*0.1;
+      } else {
+        // Oscillon: CRT phosphor palette
+        // Core: green-white (P31 phosphor), outer curves shift cyan→blue
+        // Proximity + lit: flare to white-hot
+        const dist = ot.dist; // 0=center, 1=edge
+        const shimmer = Math.sin(now*0.0023 + p.age)*0.5+0.5; // slow phosphor flicker
+
+        // Base phosphor: inner loops white-green, outer curves deep cyan/blue
+        const basR = 30  + dist*20  + p.lit*220;
+        const basG = 220 - dist*50  + p.lit*35 + shimmer*15;
+        const basB = 80  + dist*160 + p.lit*180;
+
+        // Warp intensity tints toward amber (like overdriven CRT beam)
+        const warpTint = oscWarp * 0.8;
+        r = Math.min(255, basR + warpTint * 180 + p.lit * 60);
+        g = Math.min(255, basG + warpTint * 80);
+        b = Math.min(255, basB - warpTint * 60);
+        a = 0.55 + p.lit*0.45 + shimmer*0.06 + oscWarp*0.1;
+      }
+
+      const speed = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+      // Oscillon particles elongate along velocity — like a CRT electron beam
+      const size = stateIdx===2
+        ? (0.9 + p.lit*2.2 + speed*0.08)*DPR
+        : (1.1+p.lit*2.0)*DPR;
+
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,size,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${~~r},${~~g},${~~b},${a.toFixed(2)})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  loop();
+})();
+</script>
+</body>
+</html>
