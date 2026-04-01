@@ -31,7 +31,8 @@
     nav ul a:hover { color:var(--accent); }
 
     /* HERO */
-    #hero { min-height:100vh; display:flex; flex-direction:column; justify-content:flex-end; padding:4rem 5vw 5rem; position:relative; }
+   #hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; position:relative; overflow:hidden; }
+    #hero .hero-left { display:flex; flex-direction:column; justify-content:flex-end; padding:4rem 5vw 5rem; z-index:2; }
     #hero .label { font-size:.7rem; letter-spacing:.35em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; opacity:0; animation:fadeUp .8s .3s forwards; }
     #hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(5rem,18vw,18rem); line-height:.88; color:var(--fg); opacity:0; animation:fadeUp .9s .5s forwards; }
     #hero h1 em { font-family:'Playfair Display',serif; font-style:italic; color:var(--gold); }
@@ -177,11 +178,13 @@
   <section id="hero">
     <div class="hero-left">
     <div class="label">Portfolio — Marco Mariscurrena</div>
+      <h1>
     <h1>M <em>de</em><br>Suerte</h1>
     <p class="subtitle">Marketing Digital · Diseño Web · Data Analyst · Paid Media<br>3D · Branding · Ilustración · IA Generativa · Motion</p>
     <div class="scroll-hint">Scroll</div>
-  </div>
+  
   <!-- GLOBE BANNER — costado derecho del título M de Suerte -->
+        </div>
   <div class="hero-right">
       <iframe src="globe-oscillon.html" scrolling="no" title="Globe animation interactive"></iframe>
     </div>
