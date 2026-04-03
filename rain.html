@@ -6,9 +6,19 @@
   <title>Rain — M de Suerte</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #000; overflow: hidden; cursor: none; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000;
+      --panel-bg: rgba(255,255,255,0.04);
+      --text: rgba(255,255,255,0.85);
+      --text-dim: rgba(255,255,255,0.35);
+      --accent: #00ffe0;
+    }
+
+    body { background: var(--bg); overflow: hidden; cursor: none; font-family: 'Courier New', monospace; }
     canvas { display: block; }
+
     #cursor {
       position: fixed;
       width: 4px; height: 4px;
@@ -18,10 +28,101 @@
       z-index: 9999;
       transform: translate(-50%, -50%);
     }
+
+    /* ── HUD panel — columna top-left ── */
+    #hud {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--panel-bg);
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+      width: 68px;
+    }
+
+    .ctrl input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 80px;
+      height: 2px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    .ctrl input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      cursor: pointer;
+    }
+    .ctrl input[type=range]::-moz-range-thumb {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      border: none;
+      cursor: pointer;
+    }
+
+    .ctrl .val {
+      font-size: 11px;
+      color: var(--text);
+      min-width: 26px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
+
 <div id="cursor"></div>
+
+<div id="hud">
+  <div class="ctrl">
+    <label>Gotas</label>
+    <input type="range" id="r-num" min="50" max="1200" value="500" step="10">
+    <span class="val" id="v-num">500</span>
+  </div>
+  <div class="ctrl">
+    <label>Velocidad</label>
+    <input type="range" id="r-spd" min="1" max="10" value="4" step="0.5">
+    <span class="val" id="v-spd">4</span>
+  </div>
+  <div class="ctrl">
+    <label>Colores</label>
+    <input type="range" id="r-col" min="0" max="100" value="100">
+    <span class="val" id="v-col">100</span>
+  </div>
+  <div class="ctrl">
+    <label>Repulsión</label>
+    <input type="range" id="r-rep" min="0" max="150" value="50">
+    <span class="val" id="v-rep">50</span>
+  </div>
+</div>
+
 <script>
 const cursor = document.getElementById('cursor');
 let mx = -999, my = -999;
@@ -31,19 +132,44 @@ document.addEventListener('mousemove', e => {
   cursor.style.top  = my + 'px';
 });
 
+/* ── param helpers ── */
+function getParams() {
+  return {
+    num:      +document.getElementById('r-num').value,
+    speedMul: +document.getElementById('r-spd').value,
+    colShift: +document.getElementById('r-col').value,
+    mouseR:   +document.getElementById('r-rep').value,
+  };
+}
+
+/* ── wire controls ── */
+[['num','v-num'],['spd','v-spd'],['col','v-col'],['rep','v-rep']].forEach(([k, vId]) => {
+  const inp = document.getElementById('r-' + k);
+  const out = document.getElementById(vId);
+  inp.addEventListener('input', () => { out.textContent = inp.value; });
+});
+
 new p5(function(p) {
   let drops = [];
-  const NUM = 500;
-  const MOUSE_R = 50;
+
+  /* 0 = blanco puro, 100 = RGB completamente aleatorio */
+  function randomColor(colShift) {
+    const t = colShift / 100;
+    const r = p.lerp(255, p.random(255), t);
+    const g = p.lerp(255, p.random(255), t);
+    const b = p.lerp(255, p.random(255), t);
+    return p.color(r, g, b);
+  }
 
   class Drop {
     constructor() { this.init(); }
 
     init() {
+      const { speedMul, colShift } = getParams();
       this.x      = p.random(p.width);
       this.y      = p.random(-300, 0);
-      this.speed  = p.random(1, 4) * 2;
-      this.c      = p.color(p.random(255), p.random(255), p.random(255));
+      this.speed  = p.random(1, 4) * (speedMul / 2);
+      this.c      = randomColor(colShift);
       this.eX     = 0;
       this.eY     = 0;
       this.endPos = p.height - p.random(300);
@@ -53,6 +179,8 @@ new p5(function(p) {
     }
 
     update() {
+      const { mouseR } = getParams();
+
       if (this.done) {
         this.eX += this.speed * 0.2;
         this.eY += this.speed * 0.5;
@@ -60,15 +188,16 @@ new p5(function(p) {
         return;
       }
 
-      // Mouse repulsion
-      const dx = this.x - mx;
-      const dy = this.y - my;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < MOUSE_R && dist > 0) {
-        const force = (MOUSE_R - dist) / MOUSE_R;
-        const angle = Math.atan2(dy, dx);
-        this.vx += Math.cos(angle) * force * 4;
-        this.vy += Math.sin(angle) * force * 4;
+      if (mouseR > 0) {
+        const dx = this.x - mx;
+        const dy = this.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouseR && dist > 0) {
+          const force = (mouseR - dist) / mouseR;
+          const angle = Math.atan2(dy, dx);
+          this.vx += Math.cos(angle) * force * 4;
+          this.vy += Math.sin(angle) * force * 4;
+        }
       }
 
       this.vx *= 0.85;
@@ -91,7 +220,6 @@ new p5(function(p) {
         p.noStroke();
         p.rect(this.x, this.y, 2, 15);
       } else {
-        // splash: charco horizontal en el suelo
         const fade = p.map(this.eX, 0, 50, 255, 0);
         p.stroke(p.red(this.c), p.green(this.c), p.blue(this.c), fade);
         p.strokeWeight(0.8);
@@ -104,10 +232,15 @@ new p5(function(p) {
   p.setup = function() {
     p.createCanvas(window.innerWidth, window.innerHeight);
     p.noSmooth();
-    for (let i = 0; i < NUM; i++) drops.push(new Drop());
+    const { num } = getParams();
+    for (let i = 0; i < num; i++) drops.push(new Drop());
   };
 
   p.draw = function() {
+    const { num } = getParams();
+    while (drops.length < num) drops.push(new Drop());
+    while (drops.length > num) drops.pop();
+
     p.fill(0, 70);
     p.noStroke();
     p.rect(0, 0, p.width, p.height);
