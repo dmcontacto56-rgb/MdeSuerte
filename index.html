@@ -172,52 +172,42 @@
     .services-grid .service-card.reveal:nth-child(5) { transition-delay:.40s; }
     .services-grid .service-card.reveal:nth-child(6) { transition-delay:.50s; }
 
-/* 1. Reemplaza tu .gallery-grid con esto */
+/* 1. Reemplaza TODO el bloque de .gallery-grid con esto */
 .gallery-grid {
-    display: flex;
-    flex-wrap: wrap;       /* Esto permite que las imágenes bajen si no caben */
-    gap: 2rem;             /* Espacio real entre fotos */
+    display: grid;
+    /* Esto crea 3 columnas en PC que se ajustan solas */
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    gap: 30px;
     width: 100%;
-    align-items: flex-start;
+    align-items: start;
 }
 
-   /* 2. Reemplaza tu .gallery-item con esto */
+/* 2. Reemplaza TODO el bloque de .gallery-item con esto */
 .gallery-item {
-    /* En PC se verán 3 columnas (aprox 31%) */
-    flex: 1 1 calc(33.333% - 2rem); 
-    min-width: 300px;      /* Si la pantalla se achica, se ajustan solas */
-    margin-bottom: 0;      /* El gap ya hace el trabajo ahora */
+    width: 100%;
     position: relative;
     overflow: hidden;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* Con Grid, ya no necesitas break-inside porque cada celda es independiente */
+    display: flex;
+    flex-direction: column;
 }
-    
-    @media(max-width:768px) {
-      #about { grid-template-columns:1fr; gap:3rem; }
-      .services-grid { grid-template-columns:1fr; }
-      nav ul { display:none; }
-      .gallery-grid { columns:2; }
 
-      /* 3. Asegura que la imagen no se deforme */
+/* 3. Asegura que la imagen sea la jefa del tamaño */
 .gallery-item img {
     width: 100%;
     height: auto;
     display: block;
-    object-fit: cover;
+    object-fit: contain; /* Para que no se corte ni un pixel de tu render */
 }
 
-      /* 4. En tu @media (línea 175 aprox), deja solo esto para móvil */
+/* 4. Ajuste para móvil en tu @media (línea 175 aprox) */
 @media (max-width: 768px) {
-    .gallery-item {
-        flex: 1 1 calc(50% - 1rem); /* 2 columnas en tablet/móvil grande */
-        min-width: 150px;
+    .gallery-grid {
+        /* En móvil bajamos a 2 columnas o 1 según el espacio */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
     }
-}
-
-@media (max-width: 480px) {
-    .gallery-item {
-        flex: 1 1 100%; /* 1 sola columna en celulares chicos */
-    }
+  
     }
   </style>
 </head>
