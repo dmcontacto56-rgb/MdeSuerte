@@ -180,13 +180,19 @@
 }
 
 .gallery-item {
-    display: inline-block;
     width: 100%;
     margin-bottom: 2rem;
+    display: block; /* Cambiado de inline-block a block */
+    position: relative;
+    overflow: hidden;
+    
+    /* ESTO ES LO QUE EVITA QUE SE CORTE LA IMAGEN */
     break-inside: avoid;
-  -webkit-column-break-inside: avoid; /* EVITA EL CORTE EN CHROME/SAFARI */
-    page-break-inside: avoid;      /* COMPATIBILIDAD EXTRA */
-}/* LA CLAVE: evita que se encimen */
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: 0.1s;
 }
     
     @media(max-width:768px) {
