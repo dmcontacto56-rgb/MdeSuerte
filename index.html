@@ -172,27 +172,24 @@
     .services-grid .service-card.reveal:nth-child(5) { transition-delay:.40s; }
     .services-grid .service-card.reveal:nth-child(6) { transition-delay:.50s; }
 
+/* 1. Reemplaza tu .gallery-grid con esto */
 .gallery-grid {
-    display: block;
-    column-count: 3; /* 3 columnas en PC */
-    column-gap: 2rem;
+    display: flex;
+    flex-wrap: wrap;       /* Esto permite que las imágenes bajen si no caben */
+    gap: 2rem;             /* Espacio real entre fotos */
     width: 100%;
+    align-items: flex-start;
 }
 
+   /* 2. Reemplaza tu .gallery-item con esto */
 .gallery-item {
-    width: 100%;
-    margin-bottom: 2rem;
-    display: block; /* Cambiado de inline-block a block */
+    /* En PC se verán 3 columnas (aprox 31%) */
+    flex: 1 1 calc(33.333% - 2rem); 
+    min-width: 300px;      /* Si la pantalla se achica, se ajustan solas */
+    margin-bottom: 0;      /* El gap ya hace el trabajo ahora */
     position: relative;
     overflow: hidden;
-    
-    /* ESTO ES LO QUE EVITA QUE SE CORTE LA IMAGEN */
-    break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
-    
     transition: opacity 0.5s ease, transform 0.5s ease;
-    transition-delay: 0.1s;
 }
     
     @media(max-width:768px) {
@@ -200,6 +197,27 @@
       .services-grid { grid-template-columns:1fr; }
       nav ul { display:none; }
       .gallery-grid { columns:2; }
+
+      /* 3. Asegura que la imagen no se deforme */
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+      /* 4. En tu @media (línea 175 aprox), deja solo esto para móvil */
+@media (max-width: 768px) {
+    .gallery-item {
+        flex: 1 1 calc(50% - 1rem); /* 2 columnas en tablet/móvil grande */
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-item {
+        flex: 1 1 100%; /* 1 sola columna en celulares chicos */
+    }
     }
   </style>
 </head>
