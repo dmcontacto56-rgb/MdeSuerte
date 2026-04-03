@@ -172,41 +172,37 @@
     .services-grid .service-card.reveal:nth-child(5) { transition-delay:.40s; }
     .services-grid .service-card.reveal:nth-child(6) { transition-delay:.50s; }
 
-/* 1. Reemplaza TODO el bloque de .gallery-grid con esto */
+/* Inspirado en tu captura de WhatsApp Image... (2).jpeg */
 .gallery-grid {
     display: grid;
-    /* Esto crea 3 columnas en PC que se ajustan solas */
+    /* Ajusté a 3 columnas para que tus renders luzcan mejor, pero puedes poner 4 como en tu foto */
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-    gap: 30px;
+    gap: 20px;
     width: 100%;
     align-items: start;
 }
 
-/* 2. Reemplaza TODO el bloque de .gallery-item con esto */
+/* Inspirado en tu captura de WhatsApp Image... (1).jpeg */
 .gallery-item {
     width: 100%;
     position: relative;
     overflow: hidden;
-    /* Con Grid, ya no necesitas break-inside porque cada celda es independiente */
-    display: flex;
-    flex-direction: column;
+    display: block; /* Para que no flote como texto */
 }
 
-/* 3. Asegura que la imagen sea la jefa del tamaño */
 .gallery-item img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover; /* Esto evita que la imagen se "mocho" o se deforme */
     display: block;
-    object-fit: contain; /* Para que no se corte ni un pixel de tu render */
 }
-
-/* 4. Ajuste para móvil en tu @media (línea 175 aprox) */
-@media (max-width: 768px) {
+    @media (max-width: 768px) {
     .gallery-grid {
-        /* En móvil bajamos a 2 columnas o 1 según el espacio */
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 15px;
+        /* En móvil usamos 2 columnas, tal como tenías la idea original */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
+}
   
     }
   </style>
