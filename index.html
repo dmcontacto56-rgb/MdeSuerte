@@ -25,6 +25,10 @@
 
     /* NAV */
     nav { position: fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:1.5rem 5vw; mix-blend-mode:difference; }
+    nav .logo { opacity:0; pointer-events:none; transition:opacity .5s; }
+    nav .logo.show { opacity:1; pointer-events:auto; }
+    nav ul { opacity:0; pointer-events:none; transition:opacity .5s; }
+    nav ul.show { opacity:1; pointer-events:auto; }
     nav .logo { display:flex; align-items:center; }
     nav .logo img { height:36px; width:auto; }
     nav ul { list-style:none; display:flex; gap:2.5rem; }
@@ -120,11 +124,11 @@
     .gallery-grid img:hover { transform:scale(1.02); opacity:1; }
 
     /* CSS Grid editorial — img 1 grande arriba izq, resto llena el grid */
-    .gallery-container { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,220px); gap:6px; margin-top:3rem; }
+    .gallery-container { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); gap:10px; margin-top:3rem; height:75vh; }
     .gallery-container img { width:100%; height:100%; object-fit:cover; opacity:.85; transition:opacity .4s, transform .4s; cursor:zoom-in; display:block; }
     .gallery-container img:hover { opacity:1; transform:scale(1.02); }
     .gallery-container img:first-child { grid-column:1/3; grid-row:1/3; }
-    @media(max-width:900px){ .gallery-container { grid-template-columns:repeat(2,1fr); grid-template-rows:auto; } .gallery-container img:first-child { grid-column:1/3; } }
+    @media(max-width:900px){ .gallery-container { grid-template-columns:repeat(2,1fr); grid-template-rows:auto; height:auto; } .gallery-container img:first-child { grid-column:1/3; } }
 
     .gallery-featured { width:100%; margin-top:3rem; }
     .gallery-featured img { width:100%; max-height:70vh; object-fit:cover; opacity:.85; transition:opacity .4s; cursor:zoom-in; }
@@ -159,16 +163,7 @@
     .reveal { opacity:0; transform:translateY(48px); transition:opacity .95s cubic-bezier(.22,1,.36,1), transform .95s cubic-bezier(.22,1,.36,1); }
     .reveal.visible { opacity:1; transform:none; }
 
-    section::before, .gallery-section::before {
-      content: ''; position: absolute; top:0; left:0; right:0; height:100px;
-      background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
-      pointer-events: none; z-index: 2;
-    }
-    section::after, .gallery-section::after {
-      content: ''; position: absolute; bottom:0; left:0; right:0; height:100px;
-      background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
-      pointer-events: none; z-index: 2;
-    }
+    /* no pseudo-elements — were causing overlap */
 
     .services-grid .service-card.reveal:nth-child(1) { transition-delay:.00s; }
     .services-grid .service-card.reveal:nth-child(2) { transition-delay:.10s; }
@@ -211,8 +206,8 @@
   <!-- HERO -->
   <section id="hero">
     <div class="hero-left">
-      <div class="label">Portfolio — Marco Mariscurrena</div>
-      <h1>M <em>de</em><br>Suerte</h1>
+      <div class="label">Portfolio —  </div>
+      <h1>Marco <em>°</em><br>Mariscurrena</h1>
       <p class="subtitle">Marketing Digital · Diseño Web · Data Analyst · Paid Media<br>3D · Branding · Ilustración · IA Generativa · Motion</p>
       <div class="scroll-hint">Scroll</div>
     </div>
@@ -302,27 +297,23 @@
   <!-- GALLERIES -->
   <div id="galleries">
 
-    <!-- MARKETING DIGITAL -->
+    <!-- CAMPAÑAS, CONTENIDO WEB & IA — sección única fusionada -->
     <section class="gallery-section reveal">
-      <div class="section-label">Marketing Digital · Diseño Web</div>
-      <h2 class="section-title">Campañas,<br>Contenido &amp; Web</h2>
+      <div class="section-label">Marketing · Branding · 3D · Ilustración · IA</div>
+      <h2 class="section-title">Campañas,<br>Contenido Web &amp; IA</h2>
       <div class="gallery-container">
-        <!-- ML banners primero — imagen grande arriba izq -->
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2012lfa.png" alt="ML Banner"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/CAT%C3%81LOGO%20FROMIT_compressed-1.jpg" alt="Catálogo"/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2013lfa.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2014lfa.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2015lfa.png" alt="ML Banner"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/carpeta%202%20CM%209.jpg" alt="Branding"/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2040lfa.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2060lfa.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso%2080lfa.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso 12@3x.png" alt="ML Banner"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Gafas%20black%20marble.png" alt="3D"/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/1141dbfd-c5cf-49bc-af70-99218baeb05b.jpg" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso 3@3x.png" alt="ML Banner"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso 4@3x.png" alt="ML Banner"/>
-
-
-
-        
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/venom-gold.jpg" alt="3D"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/480322252_122203198808155638_5671988181834556034_n.jpg" alt="Social"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/image(2).png" alt="Diseño"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/somos-caos.jpg" alt="Ilustración"/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/rhurbar%202.2.jpg" alt="Method"/>
       </div>
     </section>
 
@@ -331,54 +322,18 @@
       <div class="section-label">3D &amp; Ilustración Digital</div>
       <h2 class="section-title">Renders,<br>Arte &amp; Concept</h2>
       <div class="gallery-container">
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Gafas%20black%20marble.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Gafas%20black%20marble-angulo1.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Gafas%20black%20marble-angulo2.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Gafas%20black%20marble-letras.png" alt=""/>
-         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/zombi@3x.png" alt=""/>
+        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/zombi@3x.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/non%20material.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/marco-anillo-frontal.jpg" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/marco-anillo-perspectiva.jpg" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/marco-anillo-superior.jpg" alt=""/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/venom-gold.jpg" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/skull.png" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/skull.1.png" alt=""/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/nvwiy1gvxcm9gypo1kn5.jpg" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/received_1442107992525183.jpeg" alt=""/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/received_1304408693049542.jpeg" alt=""/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/somos-caos.jpg" alt=""/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/apropiacion.jpg" alt=""/>
         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/odst.jpg" alt=""/>
-        
-      </div>
-    </section>
-
-    <!-- DISEÑO GRÁFICO -->
-    <section class="gallery-section reveal">
-      <div class="section-label">Diseño Gráfico — Branding · Miniaturas · IA Generativa</div>
-      <h2 class="section-title">Identidades,<br>Contenido &amp; IA</h2>
-      <div class="gallery-container">
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/CAT%C3%81LOGO%20FROMIT_compressed-1.jpg" alt="Catálogo Fromit"/>
-         <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/rhurbar 2.2.jpg" alt="Method"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/CATÁLOGO FROMIT_compressed-670.jpg.jpg" alt="Catálogo Fromit 2"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/CAT%C3%81LOGO%20FROMIT_compressed-3.jpg" alt="Catálogo Fromit 3"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/2.png" alt="Miniatura YouTube 2"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/CAT%C3%81LAGO%20FROMIT_compressed-4.jpg" alt="Catálogo Fromit 4"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/carpeta%202%20CM%209.jpg" alt="Branding CM"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/2 (2).png" alt="Xiloso"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/carpeta%202%20CM%204.jpg" alt="Branding CM 4"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/carpeta%202%20CM%2012.jpg" alt="Branding CM 12"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/rhurbar 2.3.jpg" alt="Method"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/LETRAS Finales.png" alt="Xiloso"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/Recurso 46@3x.png" alt="Xiloso"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/480322252_122203198808155638_5671988181834556034_n.jpg" alt="Publicación social 2"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/479720152_122203197992155638_403919323957821310_n.jpg" alt="Publicación social 3"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/481665096_122206646270155638_7506463479312409191_n.jpg" alt="Publicación social 4"/>
-          <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/rhurbar 2.jpg" alt="Method"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/image(2).png" alt="Xiloso"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/480596092_122206645802155638_8054174788954857786_n.jpg" alt="Publicación social 6"/>
-        <img src="https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/main/1.1.1.png" alt="Miniatura YouTube"/>
-       
       </div>
     </section>
 
@@ -427,19 +382,30 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// LIGHTBOX
-const lb    = document.getElementById('lightbox');
-const lbImg = document.getElementById('lightbox-img');
+// LIGHTBOX — funciona con gallery-container, gallery-grid y gallery-strip
+const lb      = document.getElementById('lightbox');
+const lbImg   = document.getElementById('lightbox-img');
 const lbClose = document.getElementById('lightbox-close');
-document.querySelectorAll('.gallery-grid img, .gallery-strip img, .gallery-featured img').forEach(img => {
-  img.addEventListener('click', () => {
-    lbImg.src = img.src;
-    lb.classList.add('open');
-  });
+
+document.addEventListener('click', e => {
+  const img = e.target.closest('.gallery-container img, .gallery-grid img, .gallery-strip img, .gallery-featured img');
+  if (img) { lbImg.src = img.src; lb.classList.add('open'); }
 });
 lb.addEventListener('click', () => lb.classList.remove('open'));
-lbClose.addEventListener('click', () => lb.classList.remove('open'));
+lbClose.addEventListener('click', e => { e.stopPropagation(); lb.classList.remove('open'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+// NAV: links visible only at hero | trebol visible only at contact
+const navLinks = document.querySelector('nav ul');
+const navLogo  = document.querySelector('nav .logo');
+
+new IntersectionObserver(entries => {
+  navLinks.classList.toggle('show', entries[0].isIntersecting);
+}, { threshold: 0.1 }).observe(document.getElementById('hero'));
+
+new IntersectionObserver(entries => {
+  navLogo.classList.toggle('show', entries[0].isIntersecting);
+}, { threshold: 0.2 }).observe(document.getElementById('contact'));
 </script>
 
 <!-- P5 RAIN BACKGROUND -->
