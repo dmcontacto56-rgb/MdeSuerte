@@ -172,35 +172,36 @@
     .services-grid .service-card.reveal:nth-child(5) { transition-delay:.40s; }
     .services-grid .service-card.reveal:nth-child(6) { transition-delay:.50s; }
 
-/* Inspirado en tu captura de WhatsApp Image... (2).jpeg */
 .gallery-grid {
     display: grid;
-    /* Ajusté a 3 columnas para que tus renders luzcan mejor, pero puedes poner 4 como en tu foto */
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-    gap: 20px;
+    /* Esto es lo que tienes en tu foto de WhatsApp: repeat(X, 1fr) */
+    /* Usamos auto-fill para que sea responsivo automáticamente */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 20px; 
     width: 100%;
     align-items: start;
 }
 
-/* Inspirado en tu captura de WhatsApp Image... (1).jpeg */
 .gallery-item {
     width: 100%;
-    position: relative;
+    /* Al ser Grid, el item es una celda estanca. No se puede partir. */
     overflow: hidden;
-    display: block; /* Para que no flote como texto */
+    display: flex;
+    flex-direction: column;
 }
 
 .gallery-item img {
     width: 100%;
-    height: 100%;
-    object-fit: cover; /* Esto evita que la imagen se "mocho" o se deforme */
+    height: auto;
     display: block;
+    /* Esto es lo que tienes en tu captura (1): object-fit */
+    object-fit: cover; 
 }
     @media (max-width: 768px) {
     .gallery-grid {
-        /* En móvil usamos 2 columnas, tal como tenías la idea original */
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        /* Cambiamos 'columns' por 'grid-template-columns' */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px;
     }
 }
   
