@@ -1,18 +1,7 @@
 /* ── GALLERY PANELS — expanding hover effect ─────────────────────────────
-   Estructura HTML requerida:
-   <div class="options">
-     <div class="option active">
-       <div class="icon"><img src="..." alt=""/> OR <video ...></div>
-       <div class="info">
-         <div class="main">Título principal</div>
-         <div class="sub">Subtítulo / categoría</div>
-       </div>
-     </div>
-     ...
-   </div>
+   Northern Lights Beach Palette + Full Responsive
 ──────────────────────────────────────────────────────────────────────── */
 
-/* Northern Lights Beach Palette */
 :root {
   --nlb-1: #012340;
   --nlb-2: #025939;
@@ -23,40 +12,39 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-/* Container */
+/* ── CONTAINER ── */
 .options {
   display: flex;
   flex-direction: row;
   align-items: stretch;
   overflow: hidden;
   width: 100%;
-  height: 60vh;
-  min-height: 340px;
-  max-height: 640px;
-  gap: 6px;
-  margin-top: 3rem;
+  height: clamp(300px, 60vh, 640px);
+  gap: 5px;
+  margin-top: clamp(1.5rem, 3vw, 3rem);
+  border-radius: 6px;
 }
 
-/* Each panel */
+/* ── EACH PANEL ── */
 .option {
   position: relative;
   overflow: hidden;
   flex: 1;
-  min-width: 56px;
+  min-width: 48px;
   cursor: pointer;
   background: var(--nlb-1);
-  transition: flex 0.7s cubic-bezier(.77, 0, .175, 1),
+  transition: flex 0.65s cubic-bezier(.77, 0, .175, 1),
               box-shadow 0.4s ease;
   border-radius: 4px;
 }
 
-/* Expanded panel */
+/* ── EXPANDED ── */
 .option.active {
   flex: 6;
-  box-shadow: 0 0 36px rgba(4,217,57,0.2), 0 0 8px rgba(4,217,57,0.1);
+  box-shadow: 0 0 36px rgba(4,217,57,0.2), 0 0 8px rgba(4,217,57,0.08);
 }
 
-/* Media container */
+/* ── MEDIA CONTAINER ── */
 .option .icon {
   position: absolute;
   inset: 0;
@@ -67,47 +55,60 @@
   background: var(--nlb-1);
 }
 
-/* ── COLLAPSED: cover to fill the narrow strip ── */
-.option .icon img,
-.option .icon video {
+/* ── COLLAPSED: cover fills the narrow strip ── */
+.option:not(.active) .icon img,
+.option:not(.active) .icon video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.7s cubic-bezier(.77, 0, .175, 1),
+  transition: transform 0.65s cubic-bezier(.77, 0, .175, 1),
               filter 0.4s ease;
-  filter: brightness(0.6) saturate(0.85);
+  filter: brightness(0.55) saturate(0.8);
 }
 
-/* ── EXPANDED: contain so the full image/video is visible ── */
-.option.active .icon img,
-.option.active .icon video {
+/* ── EXPANDED: contain — whole image visible, no crop ── */
+.option.active .icon img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: brightness(0.95) saturate(1.15);
-  transform: scale(1.0);
+  display: block;
+  transition: transform 0.65s cubic-bezier(.77, 0, .175, 1),
+              filter 0.4s ease;
+  filter: brightness(0.95) saturate(1.1);
+  transform: scale(1);
+  background: var(--nlb-1);
 }
 
-/* Video autoplay on expand */
+.option.active .icon video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0.95);
+  background: #000;
+}
+
 .option .icon video {
   background: #000;
 }
 
-/* Bottom info label */
+/* ── INFO LABEL ── */
 .option .info {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.4rem 1.2rem 1rem;
-  background: linear-gradient(transparent, rgba(1,35,64,0.92) 55%);
+  padding: clamp(.8rem,1.4rem,2rem) clamp(.8rem,1.2rem,1.5rem) clamp(.6rem,1rem,1.2rem);
+  background: linear-gradient(transparent, rgba(1,35,64,0.94) 55%);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   transform: translateY(100%);
   opacity: 0;
-  transition: transform 0.5s cubic-bezier(.77, 0, .175, 1) 0.1s,
-              opacity 0.4s ease 0.1s;
+  transition: transform 0.5s cubic-bezier(.77, 0, .175, 1) 0.08s,
+              opacity 0.4s ease 0.08s;
   z-index: 5;
 }
 
@@ -116,10 +117,9 @@
   opacity: 1;
 }
 
-/* Label text */
 .option .info .main {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(1rem, 2vw, 1.6rem);
+  font-size: clamp(.9rem, 1.5vw, 1.6rem);
   letter-spacing: 0.06em;
   line-height: 1.1;
   margin-bottom: 0.3rem;
@@ -128,13 +128,13 @@
 
 .option .info .sub {
   font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
+  font-size: clamp(.5rem,.6rem,.7rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--nlb-5);
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.4s ease 0.25s, transform 0.4s ease 0.25s;
+  transition: opacity 0.4s ease 0.22s, transform 0.4s ease 0.22s;
 }
 
 .option.active .info .sub {
@@ -142,7 +142,7 @@
   transform: translateY(0);
 }
 
-/* Thin side label for collapsed panels */
+/* ── SIDE LABEL (collapsed) ── */
 .option .side-label {
   position: absolute;
   bottom: 1.2rem;
@@ -151,21 +151,19 @@
   transform-origin: center center;
   white-space: nowrap;
   font-family: 'DM Mono', monospace;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(4,217,57,0.5);
+  color: rgba(4,217,57,0.45);
   opacity: 1;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 5;
 }
 
-.option.active .side-label {
-  opacity: 0;
-}
+.option.active .side-label { opacity: 0; }
 
-/* Video badge — small tag visible on collapsed video panels */
+/* ── VIDEO BADGE ── */
 .option .video-badge {
   position: absolute;
   top: 0.5rem;
@@ -183,35 +181,63 @@
   opacity: 0.85;
   transition: opacity 0.3s;
 }
-.option.active .video-badge {
-  opacity: 0;
-}
+.option.active .video-badge { opacity: 0; }
 
-/* Hover on non-active panels */
+/* ── HOVER (non-active) ── */
 .option:not(.active):hover .icon img,
 .option:not(.active):hover .icon video {
-  filter: brightness(0.78) saturate(0.95);
+  filter: brightness(0.75) saturate(0.95);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ── RESPONSIVE TABLET ── */
+@media (max-width: 1024px) {
+  .options {
+    height: clamp(260px, 52vh, 520px);
+  }
+  .option {
+    min-width: 44px;
+  }
+}
+
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 640px) {
   .options {
     flex-direction: column;
     height: auto;
     max-height: none;
+    gap: 4px;
   }
   .option {
     flex: 1;
     min-width: unset;
-    min-height: 70px;
+    min-height: 56px;
   }
   .option.active {
     flex: 5;
-    min-height: 300px;
+    min-height: 260px;
   }
   .option .side-label {
     transform: translateX(-50%);
     bottom: 0.6rem;
+    font-size: 0.45rem;
+  }
+  .option:not(.active) .icon img,
+  .option:not(.active) .icon video {
+    object-fit: cover;
+  }
+  .option.active .icon img,
+  .option.active .icon video {
+    object-fit: contain;
+  }
+}
+
+/* ── TINY SCREENS ── */
+@media (max-width: 400px) {
+  .option.active {
+    min-height: 220px;
+  }
+  .option .info .main {
+    font-size: 0.9rem;
   }
 }
 
