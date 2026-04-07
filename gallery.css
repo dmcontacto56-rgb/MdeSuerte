@@ -1,7 +1,11 @@
+
+Gallery · CSS
+Copiar
+
 /* ── GALLERY PANELS — expanding hover effect ─────────────────────────────
    Northern Lights Beach Palette + Full Responsive
 ──────────────────────────────────────────────────────────────────────── */
-
+ 
 :root {
   --nlb-1: #012340;
   --nlb-2: #025939;
@@ -9,9 +13,9 @@
   --nlb-4: #03A63C;
   --nlb-5: #04D939;
 }
-
+ 
 *, *::before, *::after { box-sizing: border-box; }
-
+ 
 /* ── CONTAINER ── */
 .options {
   display: flex;
@@ -24,7 +28,7 @@
   margin-top: clamp(1.5rem, 3vw, 3rem);
   border-radius: 6px;
 }
-
+ 
 /* ── EACH PANEL ── */
 .option {
   position: relative;
@@ -37,13 +41,13 @@
               box-shadow 0.4s ease;
   border-radius: 4px;
 }
-
+ 
 /* ── EXPANDED ── */
 .option.active {
   flex: 6;
   box-shadow: 0 0 36px rgba(4,217,57,0.2), 0 0 8px rgba(4,217,57,0.08);
 }
-
+ 
 /* ── MEDIA CONTAINER ── */
 .option .icon {
   position: absolute;
@@ -54,7 +58,7 @@
   justify-content: center;
   background: var(--nlb-1);
 }
-
+ 
 /* ── COLLAPSED: cover fills the narrow strip ── */
 .option:not(.active) .icon img,
 .option:not(.active) .icon video {
@@ -66,7 +70,7 @@
               filter 0.4s ease;
   filter: brightness(0.55) saturate(0.8);
 }
-
+ 
 /* ── EXPANDED: contain — whole image visible, no crop ── */
 .option.active .icon img {
   width: 100%;
@@ -79,7 +83,7 @@
   transform: scale(1);
   background: var(--nlb-1);
 }
-
+ 
 .option.active .icon video {
   width: 100%;
   height: 100%;
@@ -88,11 +92,11 @@
   filter: brightness(0.95);
   background: #000;
 }
-
+ 
 .option .icon video {
   background: #000;
 }
-
+ 
 /* ── INFO LABEL ── */
 .option .info {
   position: absolute;
@@ -111,12 +115,12 @@
               opacity 0.4s ease 0.08s;
   z-index: 5;
 }
-
+ 
 .option.active .info {
   transform: translateY(0);
   opacity: 1;
 }
-
+ 
 .option .info .main {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(.9rem, 1.5vw, 1.6rem);
@@ -125,7 +129,7 @@
   margin-bottom: 0.3rem;
   color: #f0ece2;
 }
-
+ 
 .option .info .sub {
   font-family: 'DM Mono', monospace;
   font-size: clamp(.5rem,.6rem,.7rem);
@@ -136,12 +140,12 @@
   transform: translateY(6px);
   transition: opacity 0.4s ease 0.22s, transform 0.4s ease 0.22s;
 }
-
+ 
 .option.active .info .sub {
   opacity: 1;
   transform: translateY(0);
 }
-
+ 
 /* ── SIDE LABEL (collapsed) ── */
 .option .side-label {
   position: absolute;
@@ -160,9 +164,9 @@
   pointer-events: none;
   z-index: 5;
 }
-
+ 
 .option.active .side-label { opacity: 0; }
-
+ 
 /* ── VIDEO BADGE ── */
 .option .video-badge {
   position: absolute;
@@ -182,13 +186,13 @@
   transition: opacity 0.3s;
 }
 .option.active .video-badge { opacity: 0; }
-
+ 
 /* ── HOVER (non-active) ── */
 .option:not(.active):hover .icon img,
 .option:not(.active):hover .icon video {
   filter: brightness(0.75) saturate(0.95);
 }
-
+ 
 /* ── RESPONSIVE TABLET ── */
 @media (max-width: 1024px) {
   .options {
@@ -198,7 +202,7 @@
     min-width: 44px;
   }
 }
-
+ 
 /* ── RESPONSIVE MOBILE ── */
 @media (max-width: 640px) {
   .options {
@@ -230,7 +234,7 @@
     object-fit: contain;
   }
 }
-
+ 
 /* ── TINY SCREENS ── */
 @media (max-width: 400px) {
   .option.active {
@@ -240,5 +244,4 @@
     font-size: 0.9rem;
   }
 }
-
-
+ 
