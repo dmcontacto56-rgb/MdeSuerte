@@ -340,6 +340,148 @@
       .section-title { font-size: clamp(1.8rem, 10vw, 3rem); }
       .stats { grid-template-columns: 1fr; }
     }
+ 
+    /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
+ 
+    /* Row container — side by side, centered, clear of links above */
+    .arcade-row {
+      display: flex;
+      gap: clamp(3rem, 8vw, 7rem);
+      justify-content: center;
+      align-items: flex-end;
+      margin-top: clamp(4rem, 8vw, 6rem);
+      flex-wrap: wrap;
+    }
+ 
+    /* Each button item — column: dome on top, label below */
+    .arcade-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(1rem, 2vw, 1.5rem);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+ 
+    /* Mount — holds image + shadow */
+    .arcade-mount {
+      position: relative;
+      width: clamp(110px, 14vw, 170px);
+      height: clamp(90px, 11vw, 140px);
+    }
+ 
+    /* Floor shadow glow */
+    .arcade-shadow {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 75%;
+      height: 12px;
+      border-radius: 50%;
+      filter: blur(7px);
+      transition: transform .08s ease, opacity .08s ease;
+    }
+    #btn-whatsapp .arcade-shadow { background: rgba(4,217,57,0.55); }
+    #btn-cv       .arcade-shadow { background: rgba(60,120,255,0.55); }
+ 
+    /* The button PNG image */
+    .arcade-img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      display: block;
+      transition:
+        transform .08s cubic-bezier(.2,2,.3,1),
+        filter     .08s ease;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55));
+      z-index: 1;
+    }
+ 
+    /* ── PRESSED: button sinks, shadow shrinks ── */
+    .arcade-item.pressed .arcade-img {
+      transform: translateY(9px) scale(0.95);
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.65)) brightness(1.2);
+    }
+    .arcade-item.pressed .arcade-shadow {
+      transform: translateX(-50%) scaleX(0.8);
+      opacity: 0.5;
+    }
+    .arcade-item.pressed .arcade-label {
+      transform: translateY(3px);
+    }
+ 
+    /* ── HOVER: slight lift ── */
+    .arcade-item:hover .arcade-img {
+      transform: translateY(-5px) scale(1.04);
+      filter: drop-shadow(0 16px 30px rgba(0,0,0,0.5)) brightness(1.06);
+    }
+    .arcade-item:hover .arcade-shadow {
+      transform: translateX(-50%) scale(1.15);
+    }
+ 
+    /* Label pill — sits below dome, ONLY under its own button */
+    .arcade-label {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: clamp(.5rem,.9vw,.7rem) clamp(.9rem,2.2vw,1.4rem);
+      border-radius: 999px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(.78rem, 1.7vw, .98rem);
+      letter-spacing: .07em;
+      line-height: 1.25;
+      text-align: center;
+      border: 2px solid rgba(255,255,255,0.22);
+      transition: transform .08s ease, box-shadow .12s ease;
+      flex-shrink: 0;
+    }
+    #btn-whatsapp .arcade-label {
+      background: linear-gradient(135deg, #7fffa0 0%, #04D939 100%);
+      color: #012340;
+      box-shadow: 0 3px 0 #027333, 0 5px 0 #014d22, 0 8px 18px rgba(4,217,57,0.3);
+    }
+    #btn-cv .arcade-label {
+      background: linear-gradient(135deg, #80b0ff 0%, #2255ee 100%);
+      color: #fff;
+      box-shadow: 0 3px 0 #1133aa, 0 5px 0 #0a1f55, 0 8px 18px rgba(40,100,255,0.3);
+    }
+    .arcade-item.pressed .arcade-label {
+      transform: translateY(5px);
+    }
+    #btn-whatsapp.pressed .arcade-label {
+      box-shadow: 0 1px 0 #027333, 0 2px 0 #014d22, 0 3px 6px rgba(4,217,57,0.2);
+    }
+    #btn-cv.pressed .arcade-label {
+      box-shadow: 0 1px 0 #1133aa, 0 2px 0 #0a1f55, 0 3px 6px rgba(40,100,255,0.2);
+    }
+    .arcade-tick {
+      font-size: .95em;
+      flex-shrink: 0;
+    }
+ 
+    /* Reveal transition for buttons — fade + scale up */
+    .arcade-row.reveal {
+      opacity: 0;
+      transform: translateY(40px) scale(0.92);
+      transition: opacity .9s cubic-bezier(.22,1,.36,1),
+                  transform .9s cubic-bezier(.22,1,.36,1);
+    }
+    .arcade-row.reveal.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+ 
+    /* Responsive */
+    @media (max-width: 600px) {
+      .arcade-row { gap: 2rem; }
+      .arcade-mount { width: 90px; height: 74px; }
+    }
+    /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
+ 
   </style>
 </head>
 <body>
@@ -614,27 +756,29 @@
     <!-- ARCADE BUTTONS -->
     <div class="arcade-row reveal">
  
-      <!-- WhatsApp — green -->
-      <button class="arcade-btn-wrap" id="btn-whatsapp" aria-label="Enviar WhatsApp">
+      <!-- WhatsApp verde -->
+      <div class="arcade-item" id="btn-whatsapp">
         <div class="arcade-mount">
+          <div class="arcade-shadow"></div>
           <img class="arcade-img" src="Boton_verde.png" alt="WhatsApp"/>
         </div>
         <div class="arcade-label">
-          Presiona para<br><strong>WhatsApear</strong>
+          <span>Presiona para<br><strong>WhatsApear</strong></span>
           <span class="arcade-tick">✔✔</span>
         </div>
-      </button>
+      </div>
  
-      <!-- CV — blue -->
-      <button class="arcade-btn-wrap" id="btn-cv" aria-label="Descargar CV">
+      <!-- CV azul -->
+      <div class="arcade-item" id="btn-cv">
         <div class="arcade-mount">
+          <div class="arcade-shadow"></div>
           <img class="arcade-img" src="Boton_azul.png" alt="CV PDF"/>
         </div>
         <div class="arcade-label">
-          Descarga<br><strong>mi CV</strong>
+          <span>Descarga<br><strong>mi CV</strong></span>
           <span class="arcade-tick">↓</span>
         </div>
-      </button>
+      </div>
  
     </div>
   </section>
@@ -894,11 +1038,36 @@ logoEl.style.transform = 'scale(0.7)';
  
   
 </script>
-  <script src="arcade-buttons.js"></script>
+ 
+<script>
+/* ── ARCADE BUTTONS JS ── */
+(function(){
+  function playSound(src){
+    try { const a=new Audio(src); a.volume=0.7; a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
+  }
+  function initBtn(id, sound, action){
+    const el = document.getElementById(id);
+    if(!el) return;
+    function trigger(e){
+      e.preventDefault();
+      el.classList.add('pressed');
+      playSound(sound);
+      setTimeout(()=>{ el.classList.remove('pressed'); action(); }, 180);
+    }
+    el.addEventListener('click', trigger);
+    el.addEventListener('touchend', trigger, {passive:false});
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','button');
+    el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') trigger(e); });
+  }
+  initBtn('btn-whatsapp','money-soundfx.mp3',()=>{
+    window.open('https://wa.me/5215629894842','_blank','noopener');
+  });
+  initBtn('btn-cv','mac-quack.mp3',()=>{
+    window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
+  });
+})();
+</script>
 </body>
 </html>
- 
-
-
-
 
