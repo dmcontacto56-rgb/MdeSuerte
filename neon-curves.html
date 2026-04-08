@@ -6,324 +6,68 @@
   <title>Neon Curves</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #07070f;
-      --panel-bg: rgba(255,255,255,0.04);
-      --panel-border: rgba(255,255,255,0.08);
-      --text: rgba(255,255,255,0.85);
-      --text-dim: rgba(255,255,255,0.35);
-      --accent: #00ffe0;
-    }
-
-    html, body {
-      width: 100%; height: 100%;
-      background: var(--bg);
-      overflow: hidden;
-      font-family: 'Courier New', monospace;
-      cursor: none;
-    }
-
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    /* ── HUD panel ── */
+    html, body { width:100%; height:100%; background:#07070f; overflow:hidden; font-family:'Courier New',monospace; cursor:none; }
+    canvas { position:fixed; inset:0; width:100%; height:100%; display:block; }
+    #watermark { position:fixed; top:14px; left:18px; font-size:9px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,0.1); user-select:none; pointer-events:none; z-index:10; }
+    /* HUD compact — same style as rain */
     #hud {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 40px;
-      padding: 12px 24px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 10;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: calc(100vw - 32px);
+      position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+      z-index:20; display:flex; align-items:center; gap:6px;
+      background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.07);
+      border-radius:6px; padding:6px 10px;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      white-space:nowrap;
     }
-
-    .ctrl {
-      display: flex;
-      align-items: center;
-      gap: 9px;
+    .ctrl { display:flex; align-items:center; gap:4px; }
+    .ctrl label { font-size:7.5px; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,0.3); white-space:nowrap; }
+    .ctrl input[type=range] { -webkit-appearance:none; appearance:none; width:52px; height:2px; background:rgba(255,255,255,0.12); border-radius:2px; outline:none; cursor:pointer; }
+    .ctrl input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:9px; height:9px; border-radius:50%; background:#00ffe0; box-shadow:0 0 6px #00ffe0; cursor:pointer; }
+    .ctrl input[type=range]::-moz-range-thumb { width:9px; height:9px; border-radius:50%; background:#00ffe0; box-shadow:0 0 6px #00ffe0; border:none; cursor:pointer; }
+    .ctrl .val { font-size:8px; color:rgba(255,255,255,0.55); min-width:16px; text-align:right; }
+    .sep { width:1px; height:14px; background:rgba(255,255,255,0.08); flex-shrink:0; }
+    @media(max-width:520px){
+      #hud { flex-wrap:wrap; max-width:calc(100vw - 20px); gap:4px 6px; padding:5px 8px; bottom:8px; }
+      .sep { display:none; }
+      .ctrl input[type=range] { width:44px; }
     }
-
-    .ctrl label {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      white-space: nowrap;
-    }
-
-    .ctrl input[type=range] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 80px;
-      height: 2px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-    .ctrl input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      cursor: pointer;
-    }
-    .ctrl input[type=range]::-moz-range-thumb {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      border: none;
-      cursor: pointer;
-    }
-
-    .ctrl .val {
-      font-size: 11px;
-      color: var(--text);
-      min-width: 22px;
-      text-align: right;
-    }
-
-    .sep {
-      width: 1px;
-      height: 20px;
-      background: var(--panel-border);
-    }
-
-    /* ── title watermark ── */
-    #watermark {
-      position: fixed;
-      top: 24px;
-      left: 32px;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.12);
-      user-select: none;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    /* ── custom cursor ── */
-    #cursor {
-      position: fixed;
-      pointer-events: none;
-      z-index: 20;
-      width: 14px; height: 14px;
-      border: 1.5px solid rgba(255,255,255,0.6);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform 0.08s ease;
-    }
-    #cursor-dot {
-      position: fixed;
-      pointer-events: none;
-      z-index: 21;
-      width: 4px; height: 4px;
-      background: #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
+    #cursor { position:fixed; pointer-events:none; z-index:20; width:12px; height:12px; border:1.5px solid rgba(255,255,255,0.5); border-radius:50%; transform:translate(-50%,-50%); }
+    #cursor-dot { position:fixed; pointer-events:none; z-index:21; width:3px; height:3px; background:#fff; border-radius:50%; transform:translate(-50%,-50%); }
   </style>
 </head>
 <body>
-
-<div id="watermark">Neon Curves &mdash; generative</div>
+<div id="watermark">Neon Curves — generative</div>
 <div id="cursor"></div>
 <div id="cursor-dot"></div>
 <canvas id="c"></canvas>
-
 <div id="hud">
-  <div class="ctrl">
-    <label>Curvas</label>
-    <input type="range" id="r-n" min="3" max="22" value="10">
-    <span class="val" id="v-n">10</span>
-  </div>
+  <div class="ctrl"><label>Curvas</label><input type="range" id="r-n" min="3" max="22" value="10"><span class="val" id="v-n">10</span></div>
   <div class="sep"></div>
-  <div class="ctrl">
-    <label>Retardo</label>
-    <input type="range" id="r-d" min="1" max="30" value="8">
-    <span class="val" id="v-d">8</span>
-  </div>
+  <div class="ctrl"><label>Retardo</label><input type="range" id="r-d" min="1" max="30" value="8"><span class="val" id="v-d">8</span></div>
   <div class="sep"></div>
-  <div class="ctrl">
-    <label>Grosor</label>
-    <input type="range" id="r-t" min="1" max="7" value="2">
-    <span class="val" id="v-t">2</span>
-  </div>
+  <div class="ctrl"><label>Grosor</label><input type="range" id="r-t" min="1" max="7" value="2"><span class="val" id="v-t">2</span></div>
   <div class="sep"></div>
-  <div class="ctrl">
-    <label>Brillo</label>
-    <input type="range" id="r-g" min="2" max="35" value="14">
-    <span class="val" id="v-g">14</span>
-  </div>
+  <div class="ctrl"><label>Brillo</label><input type="range" id="r-g" min="2" max="35" value="14"><span class="val" id="v-g">14</span></div>
 </div>
-
 <script>
-(function () {
-  'use strict';
-
-  const canvas = document.getElementById('c');
-  const ctx    = canvas.getContext('2d');
-  const cursor    = document.getElementById('cursor');
-  const cursorDot = document.getElementById('cursor-dot');
-
-  /* ── resize ── */
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
+(function(){
+  const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+  const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursor-dot');
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  resize(); window.addEventListener('resize',()=>{resize();init();});
+  const PAL=['#ff2d78','#ff6b00','#ffe600','#39ff14','#00ffe0','#00bfff','#bf00ff','#ff00bf','#ff073a','#ff9500','#0ff0fc','#7d00ff','#fffc00','#ff3cac','#00ff87','#ff6ec7','#f7971e','#12c2e9','#c471ed','#ff4e50','#a8edea','#fed6e3'];
+  let mouse={x:canvas.width/2,y:canvas.height/2},curves=[];
+  function p(){return{n:+document.getElementById('r-n').value,delay:+document.getElementById('r-d').value,thick:+document.getElementById('r-t').value,glow:+document.getElementById('r-g').value};}
+  ['n','d','t','g'].forEach(k=>{const inp=document.getElementById('r-'+k),out=document.getElementById('v-'+k);inp.addEventListener('input',()=>{out.textContent=inp.value;if(k==='n')init();});});
+  class Curve{
+    constructor(idx,total){this.color=PAL[idx%PAL.length];const a=(Math.PI*2*idx/total)+(Math.random()-.5)*1.1,r=18+Math.random()*80;this.ox=Math.cos(a)*r;this.oy=Math.sin(a)*r;this.pts=[];this.speed=Math.max(0.035,0.2-idx*0.007);}
+    update(t,max){const gx=t.x+this.ox,gy=t.y+this.oy;if(!this.pts.length){this.pts.push({x:gx,y:gy});return;}const l=this.pts[this.pts.length-1];this.pts.push({x:l.x+(gx-l.x)*this.speed,y:l.y+(gy-l.y)*this.speed});while(this.pts.length>max)this.pts.shift();}
+    draw(ctx,glow,thick){const n=this.pts.length;if(n<3)return;const pass=(lw,al,bl)=>{ctx.save();ctx.strokeStyle=this.color;ctx.lineWidth=lw;ctx.lineCap='round';ctx.lineJoin='round';ctx.globalAlpha=al;ctx.shadowColor=this.color;ctx.shadowBlur=bl;ctx.beginPath();ctx.moveTo(this.pts[0].x,this.pts[0].y);for(let i=1;i<n-1;i++){const mx=(this.pts[i].x+this.pts[i+1].x)*.5,my=(this.pts[i].y+this.pts[i+1].y)*.5;ctx.quadraticCurveTo(this.pts[i].x,this.pts[i].y,mx,my);}ctx.lineTo(this.pts[n-1].x,this.pts[n-1].y);ctx.stroke();ctx.restore();};pass(thick*2.2,.18,glow*3);pass(thick,.85,glow);pass(thick*.3,1,glow*.5);}
   }
-  resize();
-  window.addEventListener('resize', () => { resize(); init(); });
-
-  /* ── palette ── */
-  const PALETTE = [
-    '#ff2d78','#ff6b00','#ffe600','#39ff14',
-    '#00ffe0','#00bfff','#bf00ff','#ff00bf',
-    '#ff073a','#ff9500','#0ff0fc','#7d00ff',
-    '#fffc00','#ff3cac','#00ff87','#ff6ec7',
-    '#f7971e','#12c2e9','#c471ed','#ff4e50',
-    '#a8edea','#fed6e3',
-  ];
-
-  /* ── state ── */
-  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-  let curves = [];
-
-  /* ── params ── */
-  function p() {
-    return {
-      n:     +document.getElementById('r-n').value,
-      delay: +document.getElementById('r-d').value,
-      thick: +document.getElementById('r-t').value,
-      glow:  +document.getElementById('r-g').value,
-    };
-  }
-
-  /* ── controls wiring ── */
-  ['n','d','t','g'].forEach(k => {
-    const inp = document.getElementById('r-' + k);
-    const out = document.getElementById('v-' + k);
-    inp.addEventListener('input', () => {
-      out.textContent = inp.value;
-      if (k === 'n') init();
-    });
-  });
-
-  /* ── Curve class ── */
-  class Curve {
-    constructor(idx, total) {
-      this.color = PALETTE[idx % PALETTE.length];
-      const angle = (Math.PI * 2 * idx / total) + (Math.random() - 0.5) * 1.1;
-      const r     = 18 + Math.random() * 80;
-      this.ox = Math.cos(angle) * r;
-      this.oy = Math.sin(angle) * r;
-      this.pts = [];
-      this.speed = Math.max(0.035, 0.2 - idx * 0.007);
-    }
-
-    update(target, maxPts) {
-      const gx = target.x + this.ox;
-      const gy = target.y + this.oy;
-
-      if (this.pts.length === 0) {
-        this.pts.push({ x: gx, y: gy });
-        return;
-      }
-      const last = this.pts[this.pts.length - 1];
-      this.pts.push({
-        x: last.x + (gx - last.x) * this.speed,
-        y: last.y + (gy - last.y) * this.speed,
-      });
-      while (this.pts.length > maxPts) this.pts.shift();
-    }
-
-    draw(ctx, glow, thick) {
-      const n = this.pts.length;
-      if (n < 3) return;
-
-      const drawPass = (lw, alpha, blur) => {
-        ctx.save();
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth   = lw;
-        ctx.lineCap     = 'round';
-        ctx.lineJoin    = 'round';
-        ctx.globalAlpha = alpha;
-        ctx.shadowColor = this.color;
-        ctx.shadowBlur  = blur;
-        ctx.beginPath();
-        ctx.moveTo(this.pts[0].x, this.pts[0].y);
-        for (let i = 1; i < n - 1; i++) {
-          const mx = (this.pts[i].x + this.pts[i + 1].x) * 0.5;
-          const my = (this.pts[i].y + this.pts[i + 1].y) * 0.5;
-          ctx.quadraticCurveTo(this.pts[i].x, this.pts[i].y, mx, my);
-        }
-        ctx.lineTo(this.pts[n - 1].x, this.pts[n - 1].y);
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      drawPass(thick * 2.2, 0.18, glow * 3);   // outer halo
-      drawPass(thick,       0.85, glow);         // main line
-      drawPass(thick * 0.3, 1.0,  glow * 0.5);  // bright core
-    }
-  }
-
-  /* ── init curves ── */
-  function init() {
-    const { n } = p();
-    curves = Array.from({ length: n }, (_, i) => new Curve(i, n));
-  }
+  function init(){const{n}=p();curves=Array.from({length:n},(_,i)=>new Curve(i,n));}
   init();
-
-  /* ── mouse / touch ── */
-  window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    cursor.style.left    = e.clientX + 'px';
-    cursor.style.top     = e.clientY + 'px';
-    cursorDot.style.left = e.clientX + 'px';
-    cursorDot.style.top  = e.clientY + 'px';
-  });
-  window.addEventListener('touchmove', e => {
-    e.preventDefault();
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
-  }, { passive: false });
-
-  /* ── render loop ── */
-  function loop() {
-    const { delay, thick, glow } = p();
-    const maxPts = delay * 4 + 20;
-
-    /* trail fade — semi-transparent fill each frame */
-    ctx.fillStyle = 'rgba(7, 7, 15, 0.20)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    curves.forEach(c => {
-      c.update(mouse, maxPts);
-      c.draw(ctx, glow, thick);
-    });
-
-    requestAnimationFrame(loop);
-  }
+  window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursorDot.style.left=e.clientX+'px';cursorDot.style.top=e.clientY+'px';});
+  window.addEventListener('touchmove',e=>{e.preventDefault();mouse.x=e.touches[0].clientX;mouse.y=e.touches[0].clientY;},{passive:false});
+  function loop(){const{delay,thick,glow}=p(),max=delay*4+20;ctx.fillStyle='rgba(7,7,15,0.20)';ctx.fillRect(0,0,canvas.width,canvas.height);curves.forEach(c=>{c.update(mouse,max);c.draw(ctx,glow,thick);});requestAnimationFrame(loop);}
   loop();
 })();
 </script>
