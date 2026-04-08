@@ -611,19 +611,31 @@
       <a class="contact-link" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">CV PDF</a>
     </div>
  
-    <!-- WHATSAPP BUTTON -->
-    <div class="wa-wrap reveal">
-      <a class="wa-btn" href="https://wa.me/5215629894842" target="_blank" rel="noopener">
-        <div class="wa-btn-dome">
-          <div class="wa-btn-top"></div>
-          <div class="wa-btn-mid"></div>
-          <div class="wa-btn-base"></div>
-          <div class="wa-btn-shadow"></div>
+    <!-- ARCADE BUTTONS -->
+    <div class="arcade-row reveal">
+ 
+      <!-- WhatsApp — green -->
+      <button class="arcade-btn-wrap" id="btn-whatsapp" aria-label="Enviar WhatsApp">
+        <div class="arcade-mount">
+          <img class="arcade-img" src="Boton_verde.png" alt="WhatsApp"/>
         </div>
-        <div class="wa-btn-label">
-          Presiona el botón para<br><strong>WhatsApear</strong> <span class="wa-check">✔✔</span>
+        <div class="arcade-label">
+          Presiona para<br><strong>WhatsApear</strong>
+          <span class="arcade-tick">✔✔</span>
         </div>
-      </a>
+      </button>
+ 
+      <!-- CV — blue -->
+      <button class="arcade-btn-wrap" id="btn-cv" aria-label="Descargar CV">
+        <div class="arcade-mount">
+          <img class="arcade-img" src="Boton_azul.png" alt="CV PDF"/>
+        </div>
+        <div class="arcade-label">
+          Descarga<br><strong>mi CV</strong>
+          <span class="arcade-tick">↓</span>
+        </div>
+      </button>
+ 
     </div>
   </section>
  
@@ -882,11 +894,10 @@ logoEl.style.transform = 'scale(0.7)';
  
   
 </script>
+  <script src="arcade-buttons.js"></script>
 </body>
 </html>
  
- 
-
 
 
 
