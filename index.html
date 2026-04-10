@@ -343,10 +343,11 @@
  
     /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
 
+    /* DESKTOP: text left, buttons right */
     #contact {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      column-gap: clamp(2rem, 6vw, 6rem);
+      column-gap: clamp(2rem, 5vw, 5rem);
       align-items: center;
     }
     #contact .section-label,
@@ -360,60 +361,61 @@
       flex-direction: row;
       justify-content: center;
       align-items: flex-end;
-      gap: clamp(2rem, 5vw, 4rem);
+      gap: clamp(2rem, 4vw, 3.5rem);
     }
 
     .arcade-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.2rem;
-      text-decoration: none;
+      gap: 1.1rem;
+      cursor: pointer;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
+      touch-action: manipulation;
     }
 
-    /* Wrapper — generous padding so drop-shadow never clips */
+    /* Generous padding so drop-shadow never clips */
     .arcade-mount {
       position: relative;
-      width: clamp(150px, 17vw, 220px);
-      padding: 16px 16px 24px 16px;
+      width: clamp(180px, 20vw, 260px);
+      padding: 18px 18px 28px 18px;
       box-sizing: border-box;
     }
 
-    /* The full button image — swapped on press */
+    /* Button image — swapped on press */
     .arcade-btn-img {
       display: block;
       width: 100%;
       height: auto;
-      /* normal: lifted */
-      filter: drop-shadow(0 10px 0 rgba(0,0,0,0.40))
-              drop-shadow(0 14px 22px rgba(0,0,0,0.45));
+      filter: drop-shadow(0 12px 0 rgba(0,0,0,0.42))
+              drop-shadow(0 16px 26px rgba(0,0,0,0.46));
       transform: translateY(0px);
-      transition: transform 80ms ease, filter 80ms ease;
+      /* Fast response */
+      transition: transform 60ms ease, filter 60ms ease;
+      pointer-events: none;
     }
 
     /* Hover — lift */
     .arcade-item:hover .arcade-btn-img {
-      transform: translateY(-6px);
-      filter: drop-shadow(0 16px 0 rgba(0,0,0,0.35))
-              drop-shadow(0 20px 28px rgba(0,0,0,0.40))
-              brightness(1.06);
+      transform: translateY(-7px);
+      filter: drop-shadow(0 20px 0 rgba(0,0,0,0.36))
+              drop-shadow(0 24px 32px rgba(0,0,0,0.42))
+              brightness(1.07);
     }
 
-    /* Pressed — sink, shadow collapses */
+    /* Pressed — instant sink, action fires AFTER animation */
     .arcade-item.pressed .arcade-btn-img {
-      transform: translateY(6px);
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.55))
-              drop-shadow(0 4px 8px rgba(0,0,0,0.50));
+      transform: translateY(8px);
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.6))
+              drop-shadow(0 4px 8px rgba(0,0,0,0.52));
       transition: transform 40ms ease, filter 40ms ease;
     }
 
-    /* Glow on floor */
+    /* Glow */
     .arcade-glow {
       position: absolute;
-      bottom: 6px;
+      bottom: 8px;
       left: 50%;
       transform: translateX(-50%);
       width: 55%;
@@ -421,7 +423,7 @@
       border-radius: 50%;
       filter: blur(10px);
       pointer-events: none;
-      transition: opacity 80ms, transform 80ms;
+      transition: opacity 60ms, transform 60ms;
       z-index: 0;
     }
     #btn-whatsapp .arcade-glow { background: rgba(4,217,57,0.75); }
@@ -451,15 +453,12 @@
       border: 1.5px solid rgba(60,130,255,0.30);
     }
     .arcade-label-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
+      width: 8px; height: 8px;
+      border-radius: 50%; flex-shrink: 0;
     }
-    #btn-whatsapp .arcade-label-dot { background: #04D939; box-shadow: 0 0 5px #04D939; }
-    #btn-cv       .arcade-label-dot { background: #5599ff; box-shadow: 0 0 5px #5599ff; }
-    .arcade-label-text {
-      display: flex; flex-direction: column; gap: .08rem;
-    }
+    #btn-whatsapp .arcade-label-dot { background: #04D939; box-shadow: 0 0 6px #04D939; }
+    #btn-cv       .arcade-label-dot { background: #5599ff; box-shadow: 0 0 6px #5599ff; }
+    .arcade-label-text { display: flex; flex-direction: column; gap: .08rem; }
     .arcade-label-text span {
       font-family: system-ui, sans-serif;
       font-size: .6rem; letter-spacing: .12em;
@@ -467,7 +466,7 @@
     }
     .arcade-label-text strong {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: .98rem; letter-spacing: .1em; line-height: 1;
+      font-size: 1rem; letter-spacing: .1em; line-height: 1;
     }
     #btn-whatsapp .arcade-label-text strong { color: #04D939; }
     #btn-cv       .arcade-label-text strong { color: #5599ff; }
@@ -479,13 +478,26 @@
     }
     .arcade-row.reveal.visible { opacity: 1; transform: none; }
 
+    /* ── MOBILE: stack vertically, text centered on top ── */
     @media (max-width: 768px) {
-      #contact { grid-template-columns: 1fr; }
+      #contact {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
       #contact .section-label,
       #contact .big-cta,
       #contact .contact-links { grid-column: 1; }
-      .arcade-row { grid-column: 1; grid-row: auto; margin-top: 2rem; gap: 1.2rem; }
-      .arcade-mount { width: clamp(120px, 36vw, 170px); }
+      #contact .contact-links { justify-content: center; }
+      .arcade-row {
+        grid-column: 1;
+        grid-row: auto;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.8rem;
+        margin-top: 2.5rem;
+      }
+      .arcade-mount { width: clamp(150px, 42vw, 210px); }
     }
     /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
  
@@ -1070,26 +1082,42 @@ logoEl.style.transform = 'scale(0.7)';
     const el  = document.getElementById(id);
     if(!el) return;
     const img = el.querySelector('.arcade-btn-img');
+
     function press(){
       el.classList.add('pressed');
-      if(img) img.src = img.dataset.on;
+      if(img){ img.src = img.dataset.on; }
       playSound(sound);
     }
-    function release(){
+    function release(doAction){
       el.classList.remove('pressed');
-      if(img) img.src = img.dataset.off;
+      if(img){ img.src = img.dataset.off; }
+      if(doAction) action();
     }
-    function trigger(e){
+
+    /* POINTER events — covers mouse + touch + pen */
+    el.addEventListener('pointerdown', e=>{
       e.preventDefault();
       press();
-      setTimeout(()=>{ release(); action(); }, 180);
-    }
-    el.addEventListener('pointerdown', press);
-    el.addEventListener('pointerup',   ()=>{ setTimeout(()=>{ release(); action(); }, 180); });
-    el.addEventListener('pointerleave', release);
+    }, {passive:false});
+
+    el.addEventListener('pointerup', e=>{
+      e.preventDefault();
+      /* Short delay so user SEES the press before action */
+      setTimeout(()=>release(true), 120);
+    }, {passive:false});
+
+    el.addEventListener('pointercancel', ()=>release(false));
+    el.addEventListener('pointerleave',  ()=>release(false));
+
     el.setAttribute('tabindex','0');
     el.setAttribute('role','button');
-    el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') trigger(e); });
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        press();
+        setTimeout(()=>release(true), 120);
+      }
+    });
   }
   initBtn('btn-whatsapp','money-soundfx.mp3',()=>{
     window.open('https://wa.me/5215629894842','_blank','noopener');
@@ -1101,5 +1129,6 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
+
 
 
