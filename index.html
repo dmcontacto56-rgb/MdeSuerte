@@ -292,33 +292,6 @@
     .contact-link:hover { color:#04D939; gap:1.5rem; }
     .contact-link::before { content:'↗'; font-size:1rem; }
  
-    /* ═══ LOCATION BLOCK ═══ */
-    .location-block {
-      margin-top: clamp(3rem, 6vw, 5rem);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .location-label {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      font-size: .7rem;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-      color: rgba(4,217,57,0.8);
-    }
-    .location-map {
-      width: 100%;
-      height: clamp(220px, 30vw, 340px);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(4,217,57,0.2);
-      filter: grayscale(1) brightness(0.55) hue-rotate(80deg) saturate(2);
-      transition: filter .4s ease;
-    }
-    .location-map:hover { filter: grayscale(0.3) brightness(0.75) hue-rotate(0deg) saturate(1.2); }
-
     footer { padding:2rem clamp(1.5rem,5vw,4rem); border-top:1px solid var(--muted-border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(4,217,57,0.35); }
  
     /* ═══ ANIMATIONS ═══ */
@@ -368,130 +341,70 @@
       .stats { grid-template-columns: 1fr; }
     }
  
-    /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
- 
-    /* Row container — side by side, centered, clear of links above */
+    /* ══ PUSHABLE BUTTONS ══════════════════════════════════════════════ */
+
     .arcade-row {
       display: flex;
-      gap: clamp(3rem, 8vw, 7rem);
-      justify-content: center;
-      align-items: flex-end;
-      margin-top: clamp(4rem, 8vw, 6rem);
+      gap: clamp(2rem, 6vw, 5rem);
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: clamp(3rem, 6vw, 5rem);
       flex-wrap: wrap;
     }
- 
-    /* Each button item — column: dome on top, label below */
-    .arcade-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(1rem, 2vw, 1.5rem);
+    .btn-container {
+      display: inline-block;
+      text-decoration: none;
+    }
+    .pushable {
+      position: relative;
+      border: none;
+      background: transparent;
+      padding: 0;
       cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+      outline-offset: 4px;
+      transition: filter 250ms;
     }
- 
-    /* Mount — holds image + shadow */
-    .arcade-mount {
-      position: relative;
-      width: clamp(110px, 14vw, 170px);
-      height: clamp(90px, 11vw, 140px);
-    }
- 
-    /* Floor shadow glow */
-    .arcade-shadow {
+    .shadow {
       position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 75%;
-      height: 12px;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border-radius: 50%;
-      filter: blur(7px);
-      transition: transform .08s ease, opacity .08s ease;
+      background: rgba(0,0,0,0.25);
+      will-change: transform;
+      transform: translateY(2px);
+      transition: transform 600ms cubic-bezier(.3,.7,.4,1);
     }
-    #btn-whatsapp .arcade-shadow { background: rgba(4,217,57,0.55); }
-    #btn-cv       .arcade-shadow { background: rgba(60,120,255,0.55); }
- 
-    /* The button PNG image or SVG */
-    .arcade-img {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: bottom center;
+    .edge {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+    }
+    .front {
       display: block;
-      transition:
-        transform .08s cubic-bezier(.2,2,.3,1),
-        filter     .08s ease;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55));
-      z-index: 1;
-      overflow: visible;
-    }
- 
-    /* ── PRESSED: button sinks, shadow shrinks ── */
-    .arcade-item.pressed .arcade-img {
-      transform: translateY(9px) scale(0.95);
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.65)) brightness(1.2);
-    }
-    .arcade-item.pressed .arcade-shadow {
-      transform: translateX(-50%) scaleX(0.8);
-      opacity: 0.5;
-    }
-    .arcade-item.pressed .arcade-label {
-      transform: translateY(3px);
-    }
- 
-    /* ── HOVER: slight lift ── */
-    .arcade-item:hover .arcade-img {
-      transform: translateY(-5px) scale(1.04);
-      filter: drop-shadow(0 16px 30px rgba(0,0,0,0.5)) brightness(1.06);
-    }
-    .arcade-item:hover .arcade-shadow {
-      transform: translateX(-50%) scale(1.15);
-    }
- 
-    /* Label pill — sits below dome, ONLY under its own button */
-    .arcade-label {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: clamp(.5rem,.9vw,.7rem) clamp(.9rem,2.2vw,1.4rem);
-      border-radius: 999px;
+      position: relative;
+      padding: 30px 28px;
+      border-radius: 50%;
+      color: white;
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(.78rem, 1.7vw, .98rem);
-      letter-spacing: .07em;
-      line-height: 1.25;
+      font-size: clamp(.9rem, 1.6vw, 1.05rem);
+      letter-spacing: .06em;
+      line-height: 1.3;
+      transform: translateY(-4px);
+      transition: transform 600ms cubic-bezier(.3,.7,.4,1);
       text-align: center;
-      border: 2px solid rgba(255,255,255,0.22);
-      transition: transform .08s ease, box-shadow .12s ease;
-      flex-shrink: 0;
+      min-width: 110px;
     }
-    #btn-whatsapp .arcade-label {
-      background: linear-gradient(135deg, #7fffa0 0%, #04D939 100%);
-      color: #012340;
-      box-shadow: 0 3px 0 #027333, 0 5px 0 #014d22, 0 8px 18px rgba(4,217,57,0.3);
-    }
-    #btn-cv .arcade-label {
-      background: linear-gradient(135deg, #80b0ff 0%, #2255ee 100%);
-      color: #fff;
-      box-shadow: 0 3px 0 #1133aa, 0 5px 0 #0a1f55, 0 8px 18px rgba(40,100,255,0.3);
-    }
-    .arcade-item.pressed .arcade-label {
-      transform: translateY(5px);
-    }
-    #btn-whatsapp.pressed .arcade-label {
-      box-shadow: 0 1px 0 #027333, 0 2px 0 #014d22, 0 3px 6px rgba(4,217,57,0.2);
-    }
-    #btn-cv.pressed .arcade-label {
-      box-shadow: 0 1px 0 #1133aa, 0 2px 0 #0a1f55, 0 3px 6px rgba(40,100,255,0.2);
-    }
-    .arcade-tick {
-      font-size: .95em;
-      flex-shrink: 0;
-    }
- 
-    /* Reveal transition for buttons — fade + scale up */
+    .btn-whatsapp .edge  { background: #027333; }
+    .btn-whatsapp .front { background: #04D939; color: #012340; }
+    .btn-cv .edge        { background: #0a1f55; }
+    .btn-cv .front       { background: #2255ee; }
+    .pushable:active .shadow { transform: translateY(1px);  transition: transform 34ms; }
+    .pushable:active .front  { transform: translateY(-2px); transition: transform 34ms; }
+    .pushable:hover  .front  { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3,.7,.4,1.5); }
+    .pushable:hover  .shadow { transform: translateY(4px);  transition: transform 250ms cubic-bezier(.3,.7,.4,1.5); }
+
+    /* Reveal transition for buttons */
     .arcade-row.reveal {
       opacity: 0;
       transform: translateY(40px) scale(0.92);
@@ -502,13 +415,7 @@
       opacity: 1;
       transform: translateY(0) scale(1);
     }
- 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .arcade-row { gap: 2rem; }
-      .arcade-mount { width: 90px; height: 74px; }
-    }
-    /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
+    /* ══ END PUSHABLE BUTTONS ══════════════════════════════════════════ */
  
   </style>
 </head>
@@ -781,105 +688,26 @@
       <a class="contact-link" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">CV PDF</a>
     </div>
  
-    <!-- ARCADE BUTTONS -->
+    <!-- PUSHABLE BUTTONS -->
     <div class="arcade-row reveal">
- 
-      <!-- WhatsApp verde -->
-      <div class="arcade-item" id="btn-whatsapp">
-        <div class="arcade-mount">
-          <div class="arcade-shadow"></div>
-          <svg class="arcade-img" viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="gWBase" cx="50%" cy="70%" r="55%">
-                <stop offset="0%" stop-color="#60ff90"/>
-                <stop offset="60%" stop-color="#04D939"/>
-                <stop offset="100%" stop-color="#017a22"/>
-              </radialGradient>
-              <radialGradient id="gWDome" cx="38%" cy="28%" r="55%">
-                <stop offset="0%" stop-color="#ccffdd" stop-opacity="0.9"/>
-                <stop offset="40%" stop-color="#04D939" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#013d10" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <!-- Base ring -->
-            <ellipse cx="90" cy="130" rx="72" ry="16" fill="#013d10"/>
-            <ellipse cx="90" cy="124" rx="72" ry="16" fill="#025c18"/>
-            <!-- Button body -->
-            <ellipse cx="90" cy="100" rx="70" ry="18" fill="#013d10"/>
-            <ellipse cx="90" cy="96" rx="70" ry="18" fill="#025c18"/>
-            <!-- Dome -->
-            <ellipse cx="90" cy="72" rx="68" ry="62" fill="url(#gWBase)"/>
-            <!-- Highlight -->
-            <ellipse cx="90" cy="72" rx="68" ry="62" fill="url(#gWDome)"/>
-            <!-- Specular -->
-            <ellipse cx="68" cy="42" rx="22" ry="14" fill="white" opacity="0.35" transform="rotate(-20,68,42)"/>
-          </svg>
-        </div>
-        <div class="arcade-label">
-          <span>Presiona para<br><strong>WhatsApear</strong></span>
-          <span class="arcade-tick">✔✔</span>
-        </div>
-      </div>
- 
-      <!-- CV azul -->
-      <div class="arcade-item" id="btn-cv">
-        <div class="arcade-mount">
-          <div class="arcade-shadow"></div>
-          <svg class="arcade-img" viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="gBBase" cx="50%" cy="70%" r="55%">
-                <stop offset="0%" stop-color="#90c8ff"/>
-                <stop offset="60%" stop-color="#2255ee"/>
-                <stop offset="100%" stop-color="#0a1a6e"/>
-              </radialGradient>
-              <radialGradient id="gBDome" cx="38%" cy="28%" r="55%">
-                <stop offset="0%" stop-color="#d0e8ff" stop-opacity="0.9"/>
-                <stop offset="40%" stop-color="#2255ee" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#050a2a" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <!-- Base ring -->
-            <ellipse cx="90" cy="130" rx="72" ry="16" fill="#050a2a"/>
-            <ellipse cx="90" cy="124" rx="72" ry="16" fill="#0a1a6e"/>
-            <!-- Button body -->
-            <ellipse cx="90" cy="100" rx="70" ry="18" fill="#050a2a"/>
-            <ellipse cx="90" cy="96" rx="70" ry="18" fill="#0a1a6e"/>
-            <!-- Dome -->
-            <ellipse cx="90" cy="72" rx="68" ry="62" fill="url(#gBBase)"/>
-            <!-- Highlight -->
-            <ellipse cx="90" cy="72" rx="68" ry="62" fill="url(#gBDome)"/>
-            <!-- Specular -->
-            <ellipse cx="68" cy="42" rx="22" ry="14" fill="white" opacity="0.35" transform="rotate(-20,68,42)"/>
-          </svg>
-        </div>
-        <div class="arcade-label">
-          <span>Descarga<br><strong>mi CV</strong></span>
-          <span class="arcade-tick">↓</span>
-        </div>
-      </div>
- 
-    </div>
 
-    <!-- UBICACIÓN -->
-    <div class="location-block reveal">
-      <div class="location-label">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04D939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Ciudad de México, México
-      </div>
-      <div class="location-map">
-        <iframe
-          title="Ubicación"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60175.56833658614!2d-99.21110!3d19.42847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92d3d65bfeb%3A0x4e52f44f4e5f29b8!2sCiudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1712700000000!5m2!1ses!2smx"
-          width="100%"
-          height="100%"
-          style="border:0;"
-          allowfullscreen=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-      </div>
-    </div>
+      <a href="https://wa.me/tu_numero" class="btn-container">
+        <div class="pushable btn-whatsapp">
+          <span class="shadow"></span>
+          <span class="edge"></span>
+          <span class="front">Presiona para<br><strong>WhatsApear</strong> ✔✔</span>
+        </div>
+      </a>
 
+      <a href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank" class="btn-container">
+        <div class="pushable btn-cv">
+          <span class="shadow"></span>
+          <span class="edge"></span>
+          <span class="front">Descarga<br><strong>mi CV</strong> ↓</span>
+        </div>
+      </a>
+
+    </div>
   </section>
  
 </main>
@@ -1169,5 +997,6 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
+
 
 
