@@ -341,81 +341,151 @@
       .stats { grid-template-columns: 1fr; }
     }
  
-    /* ══ PUSHABLE BUTTONS ══════════════════════════════════════════════ */
+    /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
 
+    /* Contact section becomes a 2-col grid on desktop */
+    #contact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      column-gap: clamp(2rem, 6vw, 6rem);
+      align-items: start;
+    }
+    #contact .section-label { grid-column: 1 / 2; }
+    #contact .big-cta       { grid-column: 1 / 2; }
+    #contact .contact-links { grid-column: 1 / 2; }
     .arcade-row {
+      grid-column: 2 / 3;
+      grid-row: 1 / 4;
       display: flex;
-      gap: clamp(2rem, 6vw, 5rem);
-      justify-content: flex-start;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      margin-top: clamp(3rem, 6vw, 5rem);
-      flex-wrap: wrap;
+      gap: clamp(2rem, 4vw, 3.5rem);
+      padding: clamp(2rem, 4vw, 4rem) 0;
     }
-    .btn-container {
-      display: inline-block;
-      text-decoration: none;
-    }
-    .pushable {
-      position: relative;
-      border: none;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
-      outline-offset: 4px;
-      transition: filter 250ms;
-    }
-    .shadow {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.25);
-      will-change: transform;
-      transform: translateY(2px);
-      transition: transform 600ms cubic-bezier(.3,.7,.4,1);
-    }
-    .edge {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border-radius: 50%;
-    }
-    .front {
-      display: block;
-      position: relative;
-      padding: 30px 28px;
-      border-radius: 50%;
-      color: white;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(.9rem, 1.6vw, 1.05rem);
-      letter-spacing: .06em;
-      line-height: 1.3;
-      transform: translateY(-4px);
-      transition: transform 600ms cubic-bezier(.3,.7,.4,1);
-      text-align: center;
-      min-width: 110px;
-    }
-    .btn-whatsapp .edge  { background: #027333; }
-    .btn-whatsapp .front { background: #04D939; color: #012340; }
-    .btn-cv .edge        { background: #0a1f55; }
-    .btn-cv .front       { background: #2255ee; }
-    .pushable:active .shadow { transform: translateY(1px);  transition: transform 34ms; }
-    .pushable:active .front  { transform: translateY(-2px); transition: transform 34ms; }
-    .pushable:hover  .front  { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3,.7,.4,1.5); }
-    .pushable:hover  .shadow { transform: translateY(4px);  transition: transform 250ms cubic-bezier(.3,.7,.4,1.5); }
 
-    /* Reveal transition for buttons */
+    /* Each button: dome on top, label below — label does NOT move */
+    .arcade-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Dome wrapper */
+    .arcade-mount {
+      position: relative;
+      width: clamp(130px, 16vw, 200px);
+      height: clamp(110px, 14vw, 170px);
+      cursor: pointer;
+    }
+
+    /* The button image — only THIS moves on press */
+    .arcade-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      display: block;
+      transition: transform .1s cubic-bezier(.2,2,.3,1), filter .1s ease;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+    }
+    .arcade-item:hover  .arcade-img { transform: translateY(-6px) scale(1.04); filter: drop-shadow(0 20px 36px rgba(0,0,0,0.5)) brightness(1.08); }
+    .arcade-item.pressed .arcade-img { transform: translateY(10px) scale(0.94); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)) brightness(1.15); transition: transform .05s ease, filter .05s ease; }
+
+    /* Glow under dome */
+    .arcade-glow {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 14px;
+      border-radius: 50%;
+      filter: blur(8px);
+      transition: opacity .1s ease, transform .1s ease;
+      pointer-events: none;
+    }
+    #btn-whatsapp .arcade-glow { background: rgba(4,217,57,0.7); }
+    #btn-cv       .arcade-glow { background: rgba(60,120,255,0.7); }
+    .arcade-item.pressed .arcade-glow { opacity: 0.3; transform: translateX(-50%) scaleX(0.7); }
+
+    /* ── LABEL — static, does not move ── */
+    .arcade-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: .55rem 1.3rem .55rem 1rem;
+      border-radius: 999px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(.8rem, 1.4vw, .95rem);
+      letter-spacing: .12em;
+      line-height: 1.2;
+      pointer-events: none;
+    }
+    #btn-whatsapp .arcade-label {
+      background: linear-gradient(135deg, #b6ffd0 0%, #04D939 60%, #02a62b 100%);
+      color: #012d0e;
+      box-shadow:
+        0 4px 0 #016e1c,
+        0 7px 0 #003d0e,
+        0 10px 20px rgba(4,217,57,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    #btn-cv .arcade-label {
+      background: linear-gradient(135deg, #b0ccff 0%, #2255ee 60%, #0f2ea8 100%);
+      color: #fff;
+      box-shadow:
+        0 4px 0 #1133aa,
+        0 7px 0 #071a5e,
+        0 10px 20px rgba(40,100,255,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .arcade-label-icon {
+      font-size: 1.1em;
+      flex-shrink: 0;
+    }
+    .arcade-label-text { text-align: left; }
+    .arcade-label-text small {
+      display: block;
+      font-family: system-ui, sans-serif;
+      font-size: .6em;
+      letter-spacing: .05em;
+      opacity: .75;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .arcade-label-text strong { display: block; font-size: 1.05em; }
+
+    /* Reveal */
     .arcade-row.reveal {
       opacity: 0;
-      transform: translateY(40px) scale(0.92);
-      transition: opacity .9s cubic-bezier(.22,1,.36,1),
-                  transform .9s cubic-bezier(.22,1,.36,1);
+      transform: translateY(40px);
+      transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
     }
-    .arcade-row.reveal.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+    .arcade-row.reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Mobile: stack vertically, buttons below text */
+    @media (max-width: 768px) {
+      #contact { grid-template-columns: 1fr; }
+      #contact .section-label,
+      #contact .big-cta,
+      #contact .contact-links { grid-column: 1; }
+      .arcade-row {
+        grid-column: 1;
+        grid-row: auto;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
     }
-    /* ══ END PUSHABLE BUTTONS ══════════════════════════════════════════ */
+    /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
  
   </style>
 </head>
@@ -688,22 +758,40 @@
       <a class="contact-link" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">CV PDF</a>
     </div>
  
-    <!-- PUSHABLE BUTTONS -->
+    <!-- ARCADE BUTTONS -->
     <div class="arcade-row reveal">
 
-      <a href="https://wa.me/tu_numero" class="btn-container">
-        <div class="pushable btn-whatsapp">
-          <span class="shadow"></span>
-          <span class="edge"></span>
-          <span class="front">Presiona para<br><strong>WhatsApear</strong> ✔✔</span>
+      <!-- WhatsApp verde -->
+      <a class="arcade-item" id="btn-whatsapp" href="https://wa.me/tu_numero" target="_blank">
+        <div class="arcade-mount">
+          <div class="arcade-glow"></div>
+          <img class="arcade-img"
+               src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/89a85b0965be6dc4e8bab83cdf2bfe9d1b1450c8/Boton%20verde.png?raw=true"
+               alt="WhatsApp"/>
+        </div>
+        <div class="arcade-label">
+          <span class="arcade-label-icon">💬</span>
+          <span class="arcade-label-text">
+            <small>Escríbeme directo</small>
+            <strong>WhatsApp</strong>
+          </span>
         </div>
       </a>
 
-      <a href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank" class="btn-container">
-        <div class="pushable btn-cv">
-          <span class="shadow"></span>
-          <span class="edge"></span>
-          <span class="front">Descarga<br><strong>mi CV</strong> ↓</span>
+      <!-- CV azul -->
+      <a class="arcade-item" id="btn-cv" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">
+        <div class="arcade-mount">
+          <div class="arcade-glow"></div>
+          <img class="arcade-img"
+               src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/5aabaf7b67cf42b176759bb88db5d03b560ea1b6/Boton%20azul.png?raw=true"
+               alt="CV PDF"/>
+        </div>
+        <div class="arcade-label">
+          <span class="arcade-label-icon">↓</span>
+          <span class="arcade-label-text">
+            <small>Descarga gratis</small>
+            <strong>Mi CV</strong>
+          </span>
         </div>
       </a>
 
@@ -997,6 +1085,7 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
+
 
 
 
