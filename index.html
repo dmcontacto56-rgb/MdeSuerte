@@ -343,8 +343,10 @@
  
     /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
 
-    /* ── CONTACT LAYOUT: on desktop = 2 cols (text left, buttons right)
-       on mobile = full column, buttons ABOVE contact links            ── */
+    /* Google Font — DM Mono for the label tag feel */
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Mono:wght@700&display=swap');
+
+    /* ── CONTACT LAYOUT: desktop 2-col, mobile column ── */
     #contact {
       display: grid !important;
       grid-template-columns: 1fr auto;
@@ -352,12 +354,8 @@
       gap: 0;
       align-items: start;
     }
-    #contact .section-label {
-      grid-column: 1; grid-row: 1;
-    }
-    #contact .big-cta {
-      grid-column: 1; grid-row: 2;
-    }
+    #contact .section-label { grid-column: 1; grid-row: 1; }
+    #contact .big-cta       { grid-column: 1; grid-row: 2; }
     #contact .contact-links {
       grid-column: 1; grid-row: 3;
       align-self: end;
@@ -369,52 +367,54 @@
       margin-top: 0;
     }
 
-    /* Row container — side by side */
+    /* Row container */
     .arcade-row {
       display: flex;
       flex-direction: row;
-      gap: clamp(2rem, 5vw, 5rem);
+      gap: clamp(3rem, 6vw, 6rem);
       justify-content: center;
       align-items: flex-end;
       margin-top: clamp(3rem, 6vw, 5rem);
       flex-wrap: nowrap;
-      padding: 1rem;
+      padding: 1.5rem 1rem 1rem;
     }
 
-    /* Each button item — column: dome on top, label below */
+    /* Each button item: dome + label stacked */
     .arcade-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: clamp(.8rem, 1.5vw, 1.2rem);
+      gap: clamp(1.2rem, 2vw, 1.8rem);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      outline: none;
     }
 
-    /* Mount — holds image + shadow — SAME SIZE for both buttons */
+    /* ── DOME MOUNT ── bigger, more impactful */
     .arcade-mount {
       position: relative;
-      width: clamp(130px, 16vw, 190px);
-      height: clamp(110px, 13vw, 160px);
+      width: clamp(180px, 20vw, 260px);
+      height: clamp(150px, 17vw, 220px);
     }
 
-    /* Floor shadow glow */
+    /* Floor glow — ellipse shadow under dome */
     .arcade-shadow {
       position: absolute;
-      bottom: -6px;
+      bottom: -4px;
       left: 50%;
       transform: translateX(-50%);
-      width: 75%;
-      height: 14px;
+      width: 70%;
+      height: 18px;
       border-radius: 50%;
-      filter: blur(8px);
-      transition: transform .08s ease, opacity .08s ease;
+      filter: blur(10px);
+      opacity: 0.75;
+      transition: transform .07s ease, opacity .07s ease, width .07s ease;
     }
-    #btn-whatsapp .arcade-shadow { background: rgba(4,217,57,0.6); }
-    #btn-cv       .arcade-shadow { background: rgba(60,130,255,0.6); }
+    #btn-whatsapp .arcade-shadow { background: radial-gradient(ellipse, rgba(4,217,57,0.9) 0%, rgba(4,217,57,0) 80%); }
+    #btn-cv       .arcade-shadow { background: radial-gradient(ellipse, rgba(60,130,255,0.9) 0%, rgba(60,130,255,0) 80%); }
 
-    /* The button PNG image */
+    /* The dome PNG */
     .arcade-img {
       position: relative;
       width: 100%;
@@ -422,133 +422,165 @@
       object-fit: contain;
       object-position: bottom center;
       display: block;
+      /* Base state: resting up, casting deep shadow */
+      transform: translateY(-6px);
+      filter: drop-shadow(0 18px 32px rgba(0,0,0,0.65)) drop-shadow(0 6px 8px rgba(0,0,0,0.4));
       transition:
-        transform .08s cubic-bezier(.2,2,.3,1),
-        filter     .08s ease;
-      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+        transform .07s cubic-bezier(.15,.5,.3,1),
+        filter    .07s ease;
       z-index: 1;
+      will-change: transform, filter;
     }
 
-    /* ── PRESSED: button sinks — instant like myinstants ── */
-    .arcade-item.pressed .arcade-img {
-      transform: translateY(14px) scale(0.90) !important;
-      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)) brightness(0.85) !important;
-      transition: transform .06s cubic-bezier(.2,0,.4,1), filter .06s ease !important;
-    }
-    .arcade-item.pressed .arcade-shadow {
-      transform: translateX(-50%) scaleX(0.55) !important;
-      opacity: 0.25 !important;
-      transition: transform .06s ease, opacity .06s ease !important;
-    }
-    .arcade-item.pressed .arcade-label {
-      transform: translateY(7px) !important;
-      transition: transform .06s ease !important;
-    }
-
-    /* ── HOVER: lift ── */
+    /* ── HOVER: lift higher ── */
     .arcade-item:hover .arcade-img {
-      transform: translateY(-6px) scale(1.05);
-      filter: drop-shadow(0 20px 36px rgba(0,0,0,0.45)) brightness(1.08);
+      transform: translateY(-12px) scale(1.04);
+      filter: drop-shadow(0 28px 44px rgba(0,0,0,0.5)) drop-shadow(0 8px 12px rgba(0,0,0,0.3)) brightness(1.06);
     }
     .arcade-item:hover .arcade-shadow {
-      transform: translateX(-50%) scale(1.18);
+      transform: translateX(-50%) scaleX(1.25);
+      opacity: 0.9;
     }
 
-    /* ══ GLASS PILL LABEL ══════════════════════════════════════════ */
-    .arcade-label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: clamp(.55rem,1vw,.8rem) clamp(1rem,2.5vw,1.6rem);
-      border-radius: 999px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(.82rem, 1.8vw, 1.05rem);
-      letter-spacing: .08em;
-      line-height: 1.25;
-      text-align: center;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: transform .1s ease, box-shadow .15s ease;
-      /* Glass morphism base */
-      backdrop-filter: blur(12px) saturate(1.6);
-      -webkit-backdrop-filter: blur(12px) saturate(1.6);
-      border: 1.5px solid rgba(255,255,255,0.35);
-      /* Inner highlight — top edge bright streak */
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.55),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 0 0 1px rgba(0,0,0,0.08);
-      /* Pseudo glass shine via gradient overlay on background */
+    /* ── PRESSED: dome sinks INTO the base — key effect ── */
+    .arcade-item.pressed .arcade-img {
+      transform: translateY(10px) scale(0.93) !important;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.85)) drop-shadow(0 1px 2px rgba(0,0,0,0.6)) brightness(0.82) !important;
+      transition: transform .05s cubic-bezier(.3,0,.5,1), filter .05s ease !important;
+    }
+    .arcade-item.pressed .arcade-shadow {
+      transform: translateX(-50%) scaleX(0.5) !important;
+      opacity: 0.35 !important;
+      width: 50% !important;
+      transition: all .05s ease !important;
+    }
+    .arcade-item.pressed .arcade-tag {
+      transform: translateY(5px) !important;
+      transition: transform .05s ease !important;
+    }
+
+    /* ══ LABEL TAG — redesigned completely ══════════════════════════ */
+    /* Concept: industrial metal tag / sticker label — no more pill blob */
+    .arcade-tag {
       position: relative;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      transition: transform .07s ease;
       z-index: 2;
     }
-    /* Shine streak */
-    .arcade-label::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 48%;
-      background: linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.38) 0%,
-        rgba(255,255,255,0.06) 100%
-      );
-      border-radius: 999px 999px 50% 50%;
-      pointer-events: none;
-    }
 
-    /* WhatsApp — green glass */
-    #btn-whatsapp .arcade-label {
-      background: linear-gradient(
-        145deg,
-        rgba(127,255,160,0.55) 0%,
-        rgba(4,217,57,0.72) 60%,
-        rgba(2,115,51,0.65) 100%
-      );
-      color: #012340;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.6),
-        inset 0 -2px 0 rgba(0,0,0,0.15),
-        0 4px 0 #027333,
-        0 6px 0 #014d22,
-        0 10px 22px rgba(4,217,57,0.35),
-        0 0 0 1px rgba(4,217,57,0.25);
-    }
-
-    /* CV — blue glass */
-    #btn-cv .arcade-label {
-      background: linear-gradient(
-        145deg,
-        rgba(160,200,255,0.55) 0%,
-        rgba(60,130,255,0.72) 60%,
-        rgba(20,60,200,0.65) 100%
-      );
-      color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,30,0.4);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.55),
-        inset 0 -2px 0 rgba(0,0,0,0.18),
-        0 4px 0 #1133aa,
-        0 6px 0 #0a1f55,
-        0 10px 22px rgba(40,100,255,0.35),
-        0 0 0 1px rgba(60,130,255,0.25);
-    }
-
-    .arcade-item.pressed .arcade-label { transform: translateY(6px); }
-    #btn-whatsapp.pressed .arcade-label {
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 0 #027333, 0 2px 0 #014d22, 0 3px 8px rgba(4,217,57,0.2);
-    }
-    #btn-cv.pressed .arcade-label {
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 1px 0 #1133aa, 0 2px 0 #0a1f55, 0 3px 8px rgba(40,100,255,0.2);
-    }
-    .arcade-tick {
-      font-size: 1em;
-      flex-shrink: 0;
+    /* The tag body itself */
+    .arcade-tag-inner {
       position: relative;
+      padding: 0.7rem 1.4rem 0.65rem;
+      border-radius: 6px;
+      overflow: hidden;
+      min-width: 120px;
+      text-align: center;
     }
-    /* ══ END GLASS PILL ════════════════════════════════════════════ */
+
+    /* Green tag — WhatsApp */
+    #btn-whatsapp .arcade-tag-inner {
+      background:
+        linear-gradient(175deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%),
+        linear-gradient(170deg, #00e84a 0%, #00a835 45%, #006622 100%);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-bottom: 1px solid rgba(0,0,0,0.35);
+      box-shadow:
+        0 0 0 1px rgba(0,200,60,0.4),
+        0 3px 0 rgba(0,80,25,0.9),
+        0 6px 0 rgba(0,50,15,0.7),
+        0 10px 0 rgba(0,30,8,0.5),
+        0 16px 28px rgba(0,200,60,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
+    }
+
+    /* Blue tag — CV */
+    #btn-cv .arcade-tag-inner {
+      background:
+        linear-gradient(175deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%),
+        linear-gradient(170deg, #5eaaff 0%, #2b6fd6 45%, #0c2f8a 100%);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-bottom: 1px solid rgba(0,0,0,0.4);
+      box-shadow:
+        0 0 0 1px rgba(60,130,255,0.4),
+        0 3px 0 rgba(10,50,160,0.9),
+        0 6px 0 rgba(5,25,90,0.7),
+        0 10px 0 rgba(2,10,50,0.5),
+        0 16px 28px rgba(40,100,255,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.28),
+        inset 0 -1px 0 rgba(0,0,0,0.22);
+    }
+
+    /* Pressed: tag sinks (box-shadow collapses) */
+    #btn-whatsapp.pressed .arcade-tag-inner {
+      box-shadow:
+        0 0 0 1px rgba(0,200,60,0.3),
+        0 1px 0 rgba(0,80,25,0.9),
+        0 2px 0 rgba(0,50,15,0.7),
+        0 6px 12px rgba(0,200,60,0.15),
+        inset 0 2px 3px rgba(0,0,0,0.3),
+        inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+    }
+    #btn-cv.pressed .arcade-tag-inner {
+      box-shadow:
+        0 0 0 1px rgba(60,130,255,0.3),
+        0 1px 0 rgba(10,50,160,0.9),
+        0 2px 0 rgba(5,25,90,0.7),
+        0 6px 12px rgba(40,100,255,0.15),
+        inset 0 2px 3px rgba(0,0,0,0.3),
+        inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+    }
+
+    /* Tag label — uppercase micro label */
+    .tag-eyebrow {
+      display: block;
+      font-family: 'DM Mono', 'Courier New', monospace;
+      font-size: clamp(0.6rem, 1vw, 0.72rem);
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      line-height: 1;
+      margin-bottom: 0.22rem;
+    }
+
+    /* Tag main text */
+    .tag-main {
+      display: block;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    #btn-whatsapp .tag-eyebrow,
+    #btn-whatsapp .tag-main {
+      color: #d4ffe3;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,80,0.3);
+    }
+
+    #btn-cv .tag-eyebrow,
+    #btn-cv .tag-main {
+      color: #deeeff;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.5), 0 0 20px rgba(80,160,255,0.3);
+    }
+
+    /* Icon badge inside tag */
+    .tag-icon {
+      position: absolute;
+      top: 50%;
+      right: 0.8rem;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      opacity: 0.6;
+      line-height: 1;
+    }
 
     /* Reveal transition */
     .arcade-row.reveal {
@@ -562,32 +594,33 @@
       transform: translateY(0) scale(1);
     }
 
-    /* ── MOBILE: stack buttons ABOVE the links ── */
+    /* ── MOBILE ── */
     @media (max-width: 768px) {
       #contact {
         display: flex !important;
         flex-direction: column;
       }
       #contact .arcade-row {
-        order: -1;          /* buttons come first */
+        order: -1;
         margin-top: clamp(1.5rem, 4vw, 2.5rem);
         margin-bottom: clamp(1rem, 3vw, 2rem);
-        gap: clamp(1.5rem, 6vw, 3rem);
+        gap: clamp(2rem, 8vw, 4rem);
         padding: 0.5rem 0;
       }
       .arcade-mount {
-        width: clamp(100px, 26vw, 140px);
-        height: clamp(82px, 21vw, 115px);
+        width: clamp(130px, 36vw, 180px);
+        height: clamp(108px, 30vw, 150px);
       }
-      .arcade-label {
-        font-size: clamp(.75rem, 3.5vw, .9rem);
-        padding: .5rem 1rem;
+      .arcade-tag-inner {
+        padding: 0.55rem 1.1rem 0.5rem;
+        min-width: 100px;
       }
+      .tag-main { font-size: clamp(.88rem, 4vw, 1.05rem); }
+      .tag-eyebrow { font-size: clamp(.55rem, 2.5vw, .65rem); }
     }
 
     @media (max-width: 400px) {
-      .arcade-mount { width: 88px; height: 72px; }
-      .arcade-label { font-size: .72rem; padding: .45rem .85rem; }
+      .arcade-mount { width: 110px; height: 92px; }
     }
     /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
  
@@ -872,23 +905,33 @@
       <div class="arcade-item" id="btn-whatsapp" tabindex="0" role="button" aria-label="Abrir WhatsApp">
         <div class="arcade-mount">
           <div class="arcade-shadow"></div>
-          <img class="arcade-img" src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20verde.png?raw=true" alt="WhatsApp"/>
+          <img class="arcade-img"
+               src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20verde.png?raw=true"
+               alt="WhatsApp"/>
         </div>
-        <div class="arcade-label">
-          <span>Presiona para<br><strong>WhatsApear</strong></span>
-          <span class="arcade-tick">✔✔</span>
+        <div class="arcade-tag">
+          <div class="arcade-tag-inner">
+            <span class="tag-eyebrow">Presiona para</span>
+            <span class="tag-main">WhatsApear</span>
+            <span class="tag-icon">✔✔</span>
+          </div>
         </div>
       </div>
- 
+
       <!-- CV azul -->
       <div class="arcade-item" id="btn-cv" tabindex="0" role="button" aria-label="Descargar CV PDF">
         <div class="arcade-mount">
           <div class="arcade-shadow"></div>
-          <img class="arcade-img" src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20azul.png?raw=true" alt="CV PDF"/>
+          <img class="arcade-img"
+               src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20azul.png?raw=true"
+               alt="CV PDF"/>
         </div>
-        <div class="arcade-label">
-          <span>Descarga<br><strong>mi CV</strong></span>
-          <span class="arcade-tick">↓</span>
+        <div class="arcade-tag">
+          <div class="arcade-tag-inner">
+            <span class="tag-eyebrow">Descarga</span>
+            <span class="tag-main">mi CV</span>
+            <span class="tag-icon">↓</span>
+          </div>
         </div>
       </div>
  
