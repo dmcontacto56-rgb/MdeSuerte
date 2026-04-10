@@ -343,20 +343,17 @@
  
     /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
 
-    /* DESKTOP: text left, buttons right */
-    #contact {
+    /* Contact inner grid — wraps text-col + buttons-col */
+    .contact-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
       column-gap: clamp(2rem, 5vw, 5rem);
       align-items: center;
+      width: 100%;
     }
-    #contact .section-label,
-    #contact .big-cta,
-    #contact .contact-links { grid-column: 1; }
+    .contact-text { display: flex; flex-direction: column; }
 
     .arcade-row {
-      grid-column: 2;
-      grid-row: 1 / 4;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -368,7 +365,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.1rem;
+      gap: 1rem;
       cursor: pointer;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -393,16 +390,14 @@
       transition: transform 60ms ease, filter 60ms ease;
       pointer-events: none;
     }
-
     .arcade-item:hover .arcade-btn-img {
       transform: translateY(-7px);
       filter: drop-shadow(0 20px 0 rgba(0,0,0,0.36))
               drop-shadow(0 24px 32px rgba(0,0,0,0.42))
               brightness(1.07);
     }
-
     .arcade-item.pressed .arcade-btn-img {
-      transform: translateY(8px);
+      transform: translateY(8px) scale(0.96);
       filter: drop-shadow(0 2px 0 rgba(0,0,0,0.6))
               drop-shadow(0 4px 8px rgba(0,0,0,0.52));
       transition: transform 40ms ease, filter 40ms ease;
@@ -417,7 +412,6 @@
       filter: blur(10px);
       pointer-events: none;
       transition: opacity 60ms, transform 60ms;
-      z-index: 0;
     }
     #btn-whatsapp .arcade-glow { background: rgba(4,217,57,0.75); }
     #btn-cv       .arcade-glow { background: rgba(60,130,255,0.75); }
@@ -463,6 +457,7 @@
     #btn-whatsapp .arcade-label-text strong { color: #04D939; }
     #btn-cv       .arcade-label-text strong { color: #5599ff; }
 
+    /* Reveal */
     .arcade-row.reveal {
       opacity: 0; transform: translateY(30px);
       transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
@@ -471,21 +466,16 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
-      #contact {
+      .contact-inner {
         grid-template-columns: 1fr;
         text-align: center;
       }
-      #contact .section-label,
-      #contact .big-cta,
-      #contact .contact-links { grid-column: 1; }
-      #contact .contact-links { justify-content: center; }
+      .contact-text .contact-links { justify-content: center; }
       .arcade-row {
-        grid-column: 1; grid-row: auto;
-        flex-direction: row;
         justify-content: center;
         flex-wrap: wrap;
         gap: 1.8rem;
-        margin-top: 2.5rem;
+        margin-top: 2rem;
       }
       .arcade-mount { width: clamp(150px, 42vw, 210px); }
     }
@@ -754,59 +744,65 @@
  
   <!-- CONTACT -->
   <section id="contact">
-    <div class="section-label reveal">Contacto</div>
-    <h2 class="big-cta reveal">¿Trabajamos<br><em>juntos?</em></h2>
-    <div class="contact-links reveal">
-      <a class="contact-link" href="https://marco_mariscurrena.artstation.com/" target="_blank">ArtStation</a>
-      <a class="contact-link" href="https://www.linkedin.com/in/marco-mariscurrena/" target="_blank">LinkedIn</a>
-      <a class="contact-link" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">CV PDF</a>
-    </div>
- 
-    <!-- ARCADE BUTTONS -->
-    <div class="arcade-row reveal">
+    <div class="contact-inner">
 
-      <!-- WhatsApp verde — <a> nativo para que Brave lo permita -->
-      <a class="arcade-item" id="btn-whatsapp"
-         href="https://wa.me/5215629894842"
-         target="_blank" rel="noopener">
-        <div class="arcade-mount">
-          <div class="arcade-glow"></div>
-          <img class="arcade-btn-img"
-            src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20verde.png?raw=true"
-            data-off="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20verde.png?raw=true"
-            data-on="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton-verde-on.png?raw=true"
-            alt="WhatsApp"/>
+      <!-- Columna izquierda: texto -->
+      <div class="contact-text">
+        <div class="section-label reveal">Contacto</div>
+        <h2 class="big-cta reveal">¿Trabajamos<br><em>juntos?</em></h2>
+        <div class="contact-links reveal">
+          <a class="contact-link" href="https://marco_mariscurrena.artstation.com/" target="_blank">ArtStation</a>
+          <a class="contact-link" href="https://www.linkedin.com/in/marco-mariscurrena/" target="_blank">LinkedIn</a>
+          <a class="contact-link" href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing" target="_blank">CV PDF</a>
         </div>
-        <div class="arcade-label">
-          <div class="arcade-label-dot"></div>
-          <div class="arcade-label-text">
-            <span>Escríbeme</span>
-            <strong>WhatsApp</strong>
+      </div>
+
+      <!-- Columna derecha: botones -->
+      <div class="arcade-row reveal">
+
+        <!-- WhatsApp verde -->
+        <a class="arcade-item" id="btn-whatsapp"
+           href="https://wa.me/5215629894842"
+           target="_blank" rel="noopener">
+          <div class="arcade-mount">
+            <div class="arcade-glow"></div>
+            <img class="arcade-btn-img"
+              src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20verde.png?raw=true"
+              data-off="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20verde.png?raw=true"
+              data-on="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton-verde-on.png?raw=true"
+              alt="WhatsApp"/>
           </div>
-        </div>
-      </a>
-
-      <!-- CV azul -->
-      <a class="arcade-item" id="btn-cv"
-         href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing"
-         target="_blank" rel="noopener">
-        <div class="arcade-mount">
-          <div class="arcade-glow"></div>
-          <img class="arcade-btn-img"
-            src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20azul.png?raw=true"
-            data-off="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20azul.png?raw=true"
-            data-on="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton-azul-on.png?raw=true"
-            alt="CV PDF"/>
-        </div>
-        <div class="arcade-label">
-          <div class="arcade-label-dot"></div>
-          <div class="arcade-label-text">
-            <span>Descarga</span>
-            <strong>Mi CV</strong>
+          <div class="arcade-label">
+            <div class="arcade-label-dot"></div>
+            <div class="arcade-label-text">
+              <span>Escríbeme</span>
+              <strong>WhatsApp</strong>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
+        <!-- CV azul -->
+        <a class="arcade-item" id="btn-cv"
+           href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing"
+           target="_blank" rel="noopener">
+          <div class="arcade-mount">
+            <div class="arcade-glow"></div>
+            <img class="arcade-btn-img"
+              src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20azul.png?raw=true"
+              data-off="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton%20azul.png?raw=true"
+              data-on="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/4c7acbe246a03543859bb2c5b15d410f14bb9053/Boton-azul-on.png?raw=true"
+              alt="CV PDF"/>
+          </div>
+          <div class="arcade-label">
+            <div class="arcade-label-dot"></div>
+            <div class="arcade-label-text">
+              <span>Descarga</span>
+              <strong>Mi CV</strong>
+            </div>
+          </div>
+        </a>
+
+      </div>
     </div>
   </section>
  
@@ -1072,34 +1068,25 @@ logoEl.style.transform = 'scale(0.7)';
   function playSound(src){
     try { const a=new Audio(src); a.volume=0.7; a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
   }
-  /* Botones arcade — <a> nativo maneja la navegación,
-     JS solo hace la animación visual + sonido */
+  /* Botones — <a> nativo navega, JS solo anima */
   function initBtnAnim(id, sound){
     const el  = document.getElementById(id);
     if(!el) return;
     const img = el.querySelector('.arcade-btn-img');
-
-    function press(){
-      el.classList.add('pressed');
-      if(img) img.src = img.dataset.on;
-      playSound(sound);
-    }
-    function release(){
-      el.classList.remove('pressed');
-      if(img) img.src = img.dataset.off;
-    }
-
-    el.addEventListener('pointerdown', ()=>press(), {passive:true});
-    el.addEventListener('pointerup',   ()=>setTimeout(release, 150), {passive:true});
-    el.addEventListener('pointerleave',()=>release(), {passive:true});
-    el.addEventListener('pointercancel',()=>release(), {passive:true});
+    function press(){ el.classList.add('pressed'); if(img) img.src=img.dataset.on; playSound(sound); }
+    function release(){ el.classList.remove('pressed'); if(img) img.src=img.dataset.off; }
+    el.addEventListener('pointerdown',  ()=>press(),         {passive:true});
+    el.addEventListener('pointerup',    ()=>setTimeout(release,150), {passive:true});
+    el.addEventListener('pointerleave', ()=>release(),        {passive:true});
+    el.addEventListener('pointercancel',()=>release(),        {passive:true});
   }
-  initBtnAnim('btn-whatsapp', 'money-soundfx.mp3');
-  initBtnAnim('btn-cv',       'mac-quack.mp3');
+  initBtnAnim('btn-whatsapp','money-soundfx.mp3');
+  initBtnAnim('btn-cv','mac-quack.mp3');
 })();
 </script>
 </body>
 </html>
+
 
 
 
