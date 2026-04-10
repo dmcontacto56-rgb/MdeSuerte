@@ -373,9 +373,9 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      text-decoration: none;
     }
 
-    /* Generous padding so drop-shadow never clips */
     .arcade-mount {
       position: relative;
       width: clamp(180px, 20vw, 260px);
@@ -383,7 +383,6 @@
       box-sizing: border-box;
     }
 
-    /* Button image — swapped on press */
     .arcade-btn-img {
       display: block;
       width: 100%;
@@ -391,12 +390,10 @@
       filter: drop-shadow(0 12px 0 rgba(0,0,0,0.42))
               drop-shadow(0 16px 26px rgba(0,0,0,0.46));
       transform: translateY(0px);
-      /* Fast response */
       transition: transform 60ms ease, filter 60ms ease;
       pointer-events: none;
     }
 
-    /* Hover — lift */
     .arcade-item:hover .arcade-btn-img {
       transform: translateY(-7px);
       filter: drop-shadow(0 20px 0 rgba(0,0,0,0.36))
@@ -404,7 +401,6 @@
               brightness(1.07);
     }
 
-    /* Pressed — instant sink, action fires AFTER animation */
     .arcade-item.pressed .arcade-btn-img {
       transform: translateY(8px);
       filter: drop-shadow(0 2px 0 rgba(0,0,0,0.6))
@@ -412,14 +408,11 @@
       transition: transform 40ms ease, filter 40ms ease;
     }
 
-    /* Glow */
     .arcade-glow {
       position: absolute;
-      bottom: 8px;
-      left: 50%;
+      bottom: 8px; left: 50%;
       transform: translateX(-50%);
-      width: 55%;
-      height: 14px;
+      width: 55%; height: 14px;
       border-radius: 50%;
       filter: blur(10px);
       pointer-events: none;
@@ -433,7 +426,6 @@
       transform: translateX(-50%) scaleX(0.5);
     }
 
-    /* ── LABEL — never moves ── */
     .arcade-label {
       display: flex;
       align-items: center;
@@ -471,14 +463,13 @@
     #btn-whatsapp .arcade-label-text strong { color: #04D939; }
     #btn-cv       .arcade-label-text strong { color: #5599ff; }
 
-    /* Reveal */
     .arcade-row.reveal {
       opacity: 0; transform: translateY(30px);
       transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
     }
     .arcade-row.reveal.visible { opacity: 1; transform: none; }
 
-    /* ── MOBILE: stack vertically, text centered on top ── */
+    /* MOBILE */
     @media (max-width: 768px) {
       #contact {
         grid-template-columns: 1fr;
@@ -489,8 +480,7 @@
       #contact .contact-links { grid-column: 1; }
       #contact .contact-links { justify-content: center; }
       .arcade-row {
-        grid-column: 1;
-        grid-row: auto;
+        grid-column: 1; grid-row: auto;
         flex-direction: row;
         justify-content: center;
         flex-wrap: wrap;
@@ -775,8 +765,10 @@
     <!-- ARCADE BUTTONS -->
     <div class="arcade-row reveal">
 
-      <!-- WhatsApp verde -->
-      <div class="arcade-item" id="btn-whatsapp">
+      <!-- WhatsApp verde — <a> nativo para que Brave lo permita -->
+      <a class="arcade-item" id="btn-whatsapp"
+         href="https://wa.me/5215629894842"
+         target="_blank" rel="noopener">
         <div class="arcade-mount">
           <div class="arcade-glow"></div>
           <img class="arcade-btn-img"
@@ -792,10 +784,12 @@
             <strong>WhatsApp</strong>
           </div>
         </div>
-      </div>
+      </a>
 
       <!-- CV azul -->
-      <div class="arcade-item" id="btn-cv">
+      <a class="arcade-item" id="btn-cv"
+         href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing"
+         target="_blank" rel="noopener">
         <div class="arcade-mount">
           <div class="arcade-glow"></div>
           <img class="arcade-btn-img"
@@ -811,7 +805,7 @@
             <strong>Mi CV</strong>
           </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </section>
@@ -1078,53 +1072,30 @@ logoEl.style.transform = 'scale(0.7)';
   function playSound(src){
     try { const a=new Audio(src); a.volume=0.7; a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
   }
-  function initBtn(id, sound, action){
+  /* Botones arcade — <a> nativo maneja la navegación,
+     JS solo hace la animación visual + sonido */
+  function initBtnAnim(id, sound){
     const el  = document.getElementById(id);
     if(!el) return;
     const img = el.querySelector('.arcade-btn-img');
 
     function press(){
       el.classList.add('pressed');
-      if(img){ img.src = img.dataset.on; }
+      if(img) img.src = img.dataset.on;
       playSound(sound);
     }
-    function release(doAction){
+    function release(){
       el.classList.remove('pressed');
-      if(img){ img.src = img.dataset.off; }
-      if(doAction) action();
+      if(img) img.src = img.dataset.off;
     }
 
-    /* POINTER events — covers mouse + touch + pen */
-    el.addEventListener('pointerdown', e=>{
-      e.preventDefault();
-      press();
-    }, {passive:false});
-
-    el.addEventListener('pointerup', e=>{
-      e.preventDefault();
-      /* Short delay so user SEES the press before action */
-      setTimeout(()=>release(true), 120);
-    }, {passive:false});
-
-    el.addEventListener('pointercancel', ()=>release(false));
-    el.addEventListener('pointerleave',  ()=>release(false));
-
-    el.setAttribute('tabindex','0');
-    el.setAttribute('role','button');
-    el.addEventListener('keydown', e=>{
-      if(e.key==='Enter'||e.key===' '){
-        e.preventDefault();
-        press();
-        setTimeout(()=>release(true), 120);
-      }
-    });
+    el.addEventListener('pointerdown', ()=>press(), {passive:true});
+    el.addEventListener('pointerup',   ()=>setTimeout(release, 150), {passive:true});
+    el.addEventListener('pointerleave',()=>release(), {passive:true});
+    el.addEventListener('pointercancel',()=>release(), {passive:true});
   }
-  initBtn('btn-whatsapp','money-soundfx.mp3',()=>{
-    window.open('https://wa.me/5215629894842','_blank','noopener');
-  });
-  initBtn('btn-cv','mac-quack.mp3',()=>{
-    window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
-  });
+  initBtnAnim('btn-whatsapp', 'money-soundfx.mp3');
+  initBtnAnim('btn-cv',       'mac-quack.mp3');
 })();
 </script>
 </body>
