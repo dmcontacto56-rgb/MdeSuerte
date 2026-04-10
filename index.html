@@ -423,22 +423,27 @@
       object-position: bottom center;
       display: block;
       transition:
-        transform .1s cubic-bezier(.2,2,.3,1),
-        filter     .1s ease;
+        transform .08s cubic-bezier(.2,2,.3,1),
+        filter     .08s ease;
       filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
       z-index: 1;
     }
 
-    /* ── PRESSED: button sinks ── */
+    /* ── PRESSED: button sinks — instant like myinstants ── */
     .arcade-item.pressed .arcade-img {
-      transform: translateY(10px) scale(0.94);
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)) brightness(1.25);
+      transform: translateY(14px) scale(0.90) !important;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)) brightness(0.85) !important;
+      transition: transform .06s cubic-bezier(.2,0,.4,1), filter .06s ease !important;
     }
     .arcade-item.pressed .arcade-shadow {
-      transform: translateX(-50%) scaleX(0.75);
-      opacity: 0.45;
+      transform: translateX(-50%) scaleX(0.55) !important;
+      opacity: 0.25 !important;
+      transition: transform .06s ease, opacity .06s ease !important;
     }
-    .arcade-item.pressed .arcade-label { transform: translateY(4px); }
+    .arcade-item.pressed .arcade-label {
+      transform: translateY(7px) !important;
+      transition: transform .06s ease !important;
+    }
 
     /* ── HOVER: lift ── */
     .arcade-item:hover .arcade-img {
@@ -1147,61 +1152,91 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
  
 <script>
-/* ── ARCADE BUTTONS JS ── */
+/* ══ ARCADE BUTTONS JS — press feels like myinstants button ══════════ */
 (function(){
 
-  /* WhatsApp sound — cash register via CDN */
-  const WA_SOUND = 'https://www.soundjay.com/misc/sounds/cash-register-1.mp3';
-
-  /* CV sound — trigger the myinstants iframe button */
-  function playQuack(){
-    try {
-      const frame = document.getElementById('quack-frame');
-      if(frame && frame.contentWindow){
-        /* myinstants embed has a single <button> — click it */
-        const btn = frame.contentDocument
-          ? frame.contentDocument.querySelector('button')
-          : null;
-        if(btn){ btn.click(); return; }
-      }
-    } catch(e){}
-    /* fallback: direct audio */
-    try {
-      const a = new Audio('https://www.myinstants.com/media/sounds/quack.mp3');
-      a.volume = 0.7; a.play().catch(()=>{});
-    } catch(e){}
-  }
-
+  /* ── Sounds ── */
   function playWaSound(){
     try {
-      const a = new Audio(WA_SOUND);
-      a.volume = 0.7; a.currentTime = 0; a.play().catch(()=>{});
+      const a = new Audio('money-soundfx.mp3');
+      a.volume = 0.7; a.currentTime = 0;
+      a.play().catch(()=>{
+        /* CDN fallback */
+        const b = new Audio('https://assets.mixkit.co/active_storage/sfx/2/2-preview.mp3');
+        b.volume = 0.6; b.play().catch(()=>{});
+      });
     } catch(e){}
   }
 
+  function playQuack(){
+    /* Try myinstants iframe first */
+    try {
+      const frame = document.getElementById('quack-frame');
+      const doc = frame && (frame.contentDocument || frame.contentWindow.document);
+      const btn = doc && doc.querySelector('button');
+      if(btn){ btn.click(); return; }
+    } catch(e){}
+    /* Fallback local file then CDN */
+    try {
+      const a = new Audio('mac-quack.mp3');
+      a.volume = 0.7; a.currentTime = 0;
+      a.play().catch(()=>{
+        const b = new Audio('https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3');
+        b.volume = 0.6; b.play().catch(()=>{});
+      });
+    } catch(e){}
+  }
+
+  /* ── Button init ──
+     mousedown / touchstart  → visual press IMMEDIATELY (like myinstants)
+     mouseup  / touchend     → release + action
+  ── */
   function initBtn(id, soundFn, action){
     const el = document.getElementById(id);
     if(!el) return;
-    let busy = false;
-    function trigger(e){
+
+    let isDown = false;
+
+    function onDown(e){
       e.preventDefault();
-      if(busy) return; busy = true;
+      if(isDown) return;
+      isDown = true;
       el.classList.add('pressed');
       try { soundFn(); } catch(err){}
-      setTimeout(()=>{
-        el.classList.remove('pressed');
-        action();
-        setTimeout(()=>{ busy = false; }, 400);
-      }, 200);
     }
-    el.addEventListener('click', trigger);
-    el.addEventListener('touchend', trigger, {passive:false});
-    el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') trigger(e); });
-  }
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
+    function onUp(e){
+      e.preventDefault();
+      if(!isDown) return;
+      isDown = false;
+      el.classList.remove('pressed');
+      /* Small delay so user sees the release animate before navigation */
+      setTimeout(action, 80);
+    }
+
+    function onCancel(){
+      isDown = false;
+      el.classList.remove('pressed');
+    }
+
+    /* Mouse */
+    el.addEventListener('mousedown',  onDown);
+    el.addEventListener('mouseup',    onUp);
+    el.addEventListener('mouseleave', onCancel);
+
+    /* Touch */
+    el.addEventListener('touchstart', onDown,    {passive:false});
+    el.addEventListener('touchend',   onUp,      {passive:false});
+    el.addEventListener('touchcancel',onCancel,  {passive:false});
+
+    /* Keyboard */
+    el.addEventListener('keydown', e=>{
+      if((e.key==='Enter'||e.key===' ') && !isDown) onDown(e);
+    });
+    el.addEventListener('keyup', e=>{
+      if(e.key==='Enter'||e.key===' ') onUp(e);
+    });
+  }
 
   function init(){
     initBtn('btn-whatsapp', playWaSound, ()=>{
@@ -1211,11 +1246,15 @@ logoEl.style.transform = 'scale(0.7)';
       window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
     });
   }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+
 })();
 </script>
 </body>
 </html>
-
 
 
 
