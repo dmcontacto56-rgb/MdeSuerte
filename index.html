@@ -343,7 +343,6 @@
  
     /* ══ ARCADE BUTTONS ══════════════════════════════════════════════ */
 
-    /* Contact inner grid — wraps text-col + buttons-col */
     .contact-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -370,7 +369,6 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
-      text-decoration: none;
     }
 
     .arcade-mount {
@@ -387,7 +385,7 @@
       filter: drop-shadow(0 12px 0 rgba(0,0,0,0.42))
               drop-shadow(0 16px 26px rgba(0,0,0,0.46));
       transform: translateY(0px);
-      transition: transform 60ms ease, filter 60ms ease;
+      transition: transform 80ms ease, filter 80ms ease;
       pointer-events: none;
     }
     .arcade-item:hover .arcade-btn-img {
@@ -397,10 +395,10 @@
               brightness(1.07);
     }
     .arcade-item.pressed .arcade-btn-img {
-      transform: translateY(8px) scale(0.96);
-      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.6))
-              drop-shadow(0 4px 8px rgba(0,0,0,0.52));
-      transition: transform 40ms ease, filter 40ms ease;
+      transform: translateY(10px) scale(0.94) !important;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.7))
+              drop-shadow(0 3px 6px rgba(0,0,0,0.55)) !important;
+      transition: transform 50ms ease, filter 50ms ease !important;
     }
 
     .arcade-glow {
@@ -411,13 +409,13 @@
       border-radius: 50%;
       filter: blur(10px);
       pointer-events: none;
-      transition: opacity 60ms, transform 60ms;
+      transition: opacity 80ms, transform 80ms;
     }
     #btn-whatsapp .arcade-glow { background: rgba(4,217,57,0.75); }
     #btn-cv       .arcade-glow { background: rgba(60,130,255,0.75); }
     .arcade-item.pressed .arcade-glow {
-      opacity: 0.2;
-      transform: translateX(-50%) scaleX(0.5);
+      opacity: 0.15 !important;
+      transform: translateX(-50%) scaleX(0.4) !important;
     }
 
     .arcade-label {
@@ -438,17 +436,13 @@
       background: rgba(60,130,255,0.07);
       border: 1.5px solid rgba(60,130,255,0.30);
     }
-    .arcade-label-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%; flex-shrink: 0;
-    }
+    .arcade-label-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     #btn-whatsapp .arcade-label-dot { background: #04D939; box-shadow: 0 0 6px #04D939; }
     #btn-cv       .arcade-label-dot { background: #5599ff; box-shadow: 0 0 6px #5599ff; }
     .arcade-label-text { display: flex; flex-direction: column; gap: .08rem; }
     .arcade-label-text span {
-      font-family: system-ui, sans-serif;
-      font-size: .6rem; letter-spacing: .12em;
-      text-transform: uppercase; opacity: .5; color: var(--fg);
+      font-family: system-ui, sans-serif; font-size: .6rem;
+      letter-spacing: .12em; text-transform: uppercase; opacity: .5; color: var(--fg);
     }
     .arcade-label-text strong {
       font-family: 'Bebas Neue', sans-serif;
@@ -457,26 +451,16 @@
     #btn-whatsapp .arcade-label-text strong { color: #04D939; }
     #btn-cv       .arcade-label-text strong { color: #5599ff; }
 
-    /* Reveal */
     .arcade-row.reveal {
       opacity: 0; transform: translateY(30px);
       transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
     }
     .arcade-row.reveal.visible { opacity: 1; transform: none; }
 
-    /* MOBILE */
     @media (max-width: 768px) {
-      .contact-inner {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
+      .contact-inner { grid-template-columns: 1fr; text-align: center; }
       .contact-text .contact-links { justify-content: center; }
-      .arcade-row {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1.8rem;
-        margin-top: 2rem;
-      }
+      .arcade-row { justify-content: center; flex-wrap: wrap; gap: 1.8rem; margin-top: 2rem; }
       .arcade-mount { width: clamp(150px, 42vw, 210px); }
     }
     /* ══ END ARCADE BUTTONS ══════════════════════════════════════════ */
@@ -745,8 +729,6 @@
   <!-- CONTACT -->
   <section id="contact">
     <div class="contact-inner">
-
-      <!-- Columna izquierda: texto -->
       <div class="contact-text">
         <div class="section-label reveal">Contacto</div>
         <h2 class="big-cta reveal">¿Trabajamos<br><em>juntos?</em></h2>
@@ -757,13 +739,8 @@
         </div>
       </div>
 
-      <!-- Columna derecha: botones -->
       <div class="arcade-row reveal">
-
-        <!-- WhatsApp verde -->
-        <a class="arcade-item" id="btn-whatsapp"
-           href="https://wa.me/5215629894842"
-           target="_blank" rel="noopener">
+        <div class="arcade-item" id="btn-whatsapp">
           <div class="arcade-mount">
             <div class="arcade-glow"></div>
             <img class="arcade-btn-img"
@@ -779,12 +756,9 @@
               <strong>WhatsApp</strong>
             </div>
           </div>
-        </a>
+        </div>
 
-        <!-- CV azul -->
-        <a class="arcade-item" id="btn-cv"
-           href="https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing"
-           target="_blank" rel="noopener">
+        <div class="arcade-item" id="btn-cv">
           <div class="arcade-mount">
             <div class="arcade-glow"></div>
             <img class="arcade-btn-img"
@@ -800,8 +774,7 @@
               <strong>Mi CV</strong>
             </div>
           </div>
-        </a>
-
+        </div>
       </div>
     </div>
   </section>
@@ -1068,24 +1041,45 @@ logoEl.style.transform = 'scale(0.7)';
   function playSound(src){
     try { const a=new Audio(src); a.volume=0.7; a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
   }
-  /* Botones — <a> nativo navega, JS solo anima */
-  function initBtnAnim(id, sound){
+  function initBtn(id, sound, url){
     const el  = document.getElementById(id);
     if(!el) return;
     const img = el.querySelector('.arcade-btn-img');
-    function press(){ el.classList.add('pressed'); if(img) img.src=img.dataset.on; playSound(sound); }
-    function release(){ el.classList.remove('pressed'); if(img) img.src=img.dataset.off; }
-    el.addEventListener('pointerdown',  ()=>press(),         {passive:true});
-    el.addEventListener('pointerup',    ()=>setTimeout(release,150), {passive:true});
-    el.addEventListener('pointerleave', ()=>release(),        {passive:true});
-    el.addEventListener('pointercancel',()=>release(),        {passive:true});
+
+    function animPress(){
+      el.classList.add('pressed');
+      if(img) img.src = img.dataset.on;
+      playSound(sound);
+    }
+    function animRelease(){
+      el.classList.remove('pressed');
+      if(img) img.src = img.dataset.off;
+    }
+
+    /* Mostrar press visual inmediatamente en pointerdown,
+       luego al soltar mostrar release y navegar */
+    el.addEventListener('pointerdown', e=>{
+      animPress();
+    }, {passive:true});
+
+    el.addEventListener('pointerup', e=>{
+      /* release visual primero */
+      animRelease();
+      /* navegar 200ms después — animación visible completa */
+      setTimeout(()=>{ window.open(url,'_blank','noopener'); }, 200);
+    }, {passive:true});
+
+    el.addEventListener('pointerleave',  animRelease, {passive:true});
+    el.addEventListener('pointercancel', animRelease, {passive:true});
   }
-  initBtnAnim('btn-whatsapp','money-soundfx.mp3');
-  initBtnAnim('btn-cv','mac-quack.mp3');
+
+  initBtn('btn-whatsapp','money-soundfx.mp3','https://wa.me/5215629894842');
+  initBtn('btn-cv','mac-quack.mp3','https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing');
 })();
 </script>
 </body>
 </html>
+
 
 
 
