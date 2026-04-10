@@ -476,6 +476,7 @@
       /* Pseudo glass shine via gradient overlay on background */
       position: relative;
       overflow: hidden;
+      z-index: 2;
     }
     /* Shine streak */
     .arcade-label::before {
@@ -857,10 +858,13 @@
     </div>
  
     <!-- ARCADE BUTTONS -->
+    <!-- Hidden myinstants iframes for sound -->
+    <iframe id="quack-frame" width="0" height="0" src="https://www.myinstants.com/instant/mac-quack-83896/embed/" frameborder="0" scrolling="no" style="position:absolute;pointer-events:none;opacity:0;"></iframe>
+
     <div class="arcade-row reveal">
  
       <!-- WhatsApp verde -->
-      <div class="arcade-item" id="btn-whatsapp">
+      <div class="arcade-item" id="btn-whatsapp" tabindex="0" role="button" aria-label="Abrir WhatsApp">
         <div class="arcade-mount">
           <div class="arcade-shadow"></div>
           <img class="arcade-img" src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20verde.png?raw=true" alt="WhatsApp"/>
@@ -872,7 +876,7 @@
       </div>
  
       <!-- CV azul -->
-      <div class="arcade-item" id="btn-cv">
+      <div class="arcade-item" id="btn-cv" tabindex="0" role="button" aria-label="Descargar CV PDF">
         <div class="arcade-mount">
           <div class="arcade-shadow"></div>
           <img class="arcade-img" src="https://github.com/dmcontacto56-rgb/MdeSuerte/blob/2c7a48e47c0fb1fdd6b2feb550756524ef93ae08/Boton%20azul.png?raw=true" alt="CV PDF"/>
@@ -1145,33 +1149,73 @@ logoEl.style.transform = 'scale(0.7)';
 <script>
 /* ── ARCADE BUTTONS JS ── */
 (function(){
-  function playSound(src){
-    try { const a=new Audio(src); a.volume=0.7; a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
+
+  /* WhatsApp sound — cash register via CDN */
+  const WA_SOUND = 'https://www.soundjay.com/misc/sounds/cash-register-1.mp3';
+
+  /* CV sound — trigger the myinstants iframe button */
+  function playQuack(){
+    try {
+      const frame = document.getElementById('quack-frame');
+      if(frame && frame.contentWindow){
+        /* myinstants embed has a single <button> — click it */
+        const btn = frame.contentDocument
+          ? frame.contentDocument.querySelector('button')
+          : null;
+        if(btn){ btn.click(); return; }
+      }
+    } catch(e){}
+    /* fallback: direct audio */
+    try {
+      const a = new Audio('https://www.myinstants.com/media/sounds/quack.mp3');
+      a.volume = 0.7; a.play().catch(()=>{});
+    } catch(e){}
   }
-  function initBtn(id, sound, action){
+
+  function playWaSound(){
+    try {
+      const a = new Audio(WA_SOUND);
+      a.volume = 0.7; a.currentTime = 0; a.play().catch(()=>{});
+    } catch(e){}
+  }
+
+  function initBtn(id, soundFn, action){
     const el = document.getElementById(id);
     if(!el) return;
+    let busy = false;
     function trigger(e){
       e.preventDefault();
+      if(busy) return; busy = true;
       el.classList.add('pressed');
-      playSound(sound);
-      setTimeout(()=>{ el.classList.remove('pressed'); action(); }, 180);
+      try { soundFn(); } catch(err){}
+      setTimeout(()=>{
+        el.classList.remove('pressed');
+        action();
+        setTimeout(()=>{ busy = false; }, 400);
+      }, 200);
     }
     el.addEventListener('click', trigger);
     el.addEventListener('touchend', trigger, {passive:false});
-    el.setAttribute('tabindex','0');
-    el.setAttribute('role','button');
     el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') trigger(e); });
   }
-  initBtn('btn-whatsapp','money-soundfx.mp3',()=>{
-    window.open('https://wa.me/5215629894842','_blank','noopener');
-  });
-  initBtn('btn-cv','mac-quack.mp3',()=>{
-    window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
-  });
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+
+  function init(){
+    initBtn('btn-whatsapp', playWaSound, ()=>{
+      window.open('https://wa.me/5215629894842','_blank','noopener');
+    });
+    initBtn('btn-cv', playQuack, ()=>{
+      window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
+    });
+  }
 })();
 </script>
 </body>
 </html>
+
+
 
 
