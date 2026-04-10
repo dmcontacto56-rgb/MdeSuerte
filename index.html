@@ -391,11 +391,11 @@
       outline: none;
     }
 
-    /* ── DOME MOUNT ── bigger, more impactful */
+    /* ── DOME MOUNT ── large, impactful */
     .arcade-mount {
       position: relative;
-      width: clamp(180px, 20vw, 260px);
-      height: clamp(150px, 17vw, 220px);
+      width: clamp(220px, 25vw, 320px);
+      height: clamp(185px, 21vw, 270px);
     }
 
     /* Floor glow — ellipse shadow under dome */
@@ -442,22 +442,18 @@
       opacity: 0.9;
     }
 
-    /* ── PRESSED: dome sinks INTO the base — key effect ── */
+    /* ── PRESSED: ONLY the dome sinks — label is STATIC ── */
     .arcade-item.pressed .arcade-img {
-      transform: translateY(10px) scale(0.93) !important;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.85)) drop-shadow(0 1px 2px rgba(0,0,0,0.6)) brightness(0.82) !important;
+      transform: translateY(12px) scale(0.91) !important;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9)) drop-shadow(0 1px 2px rgba(0,0,0,0.7)) brightness(0.78) !important;
       transition: transform .05s cubic-bezier(.3,0,.5,1), filter .05s ease !important;
     }
     .arcade-item.pressed .arcade-shadow {
-      transform: translateX(-50%) scaleX(0.5) !important;
-      opacity: 0.35 !important;
-      width: 50% !important;
+      transform: translateX(-50%) scaleX(0.45) !important;
+      opacity: 0.3 !important;
       transition: all .05s ease !important;
     }
-    .arcade-item.pressed .arcade-tag {
-      transform: translateY(5px) !important;
-      transition: transform .05s ease !important;
-    }
+    /* arcade-tag is intentionally NOT in pressed rules — stays static */
 
     /* ══ LABEL TAG — redesigned completely ══════════════════════════ */
     /* Concept: industrial metal tag / sticker label — no more pill blob */
@@ -515,25 +511,7 @@
         inset 0 -1px 0 rgba(0,0,0,0.22);
     }
 
-    /* Pressed: tag sinks (box-shadow collapses) */
-    #btn-whatsapp.pressed .arcade-tag-inner {
-      box-shadow:
-        0 0 0 1px rgba(0,200,60,0.3),
-        0 1px 0 rgba(0,80,25,0.9),
-        0 2px 0 rgba(0,50,15,0.7),
-        0 6px 12px rgba(0,200,60,0.15),
-        inset 0 2px 3px rgba(0,0,0,0.3),
-        inset 0 -1px 0 rgba(0,0,0,0.15) !important;
-    }
-    #btn-cv.pressed .arcade-tag-inner {
-      box-shadow:
-        0 0 0 1px rgba(60,130,255,0.3),
-        0 1px 0 rgba(10,50,160,0.9),
-        0 2px 0 rgba(5,25,90,0.7),
-        0 6px 12px rgba(40,100,255,0.15),
-        inset 0 2px 3px rgba(0,0,0,0.3),
-        inset 0 -1px 0 rgba(0,0,0,0.15) !important;
-    }
+    /* Tag labels are STATIC — no pressed state, no movement */
 
     /* Tag label — uppercase micro label */
     .tag-eyebrow {
@@ -608,8 +586,8 @@
         padding: 0.5rem 0;
       }
       .arcade-mount {
-        width: clamp(130px, 36vw, 180px);
-        height: clamp(108px, 30vw, 150px);
+        width: clamp(160px, 42vw, 220px);
+        height: clamp(134px, 35vw, 185px);
       }
       .arcade-tag-inner {
         padding: 0.55rem 1.1rem 0.5rem;
@@ -1298,6 +1276,7 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
+
 
 
 
