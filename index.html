@@ -377,24 +377,27 @@
     }
 
     .arcade-mount {
+      background: transparent 
       position: relative;
       width: clamp(200px, 24vw, 300px);
       height: clamp(165px, 20vw, 250px);
+       background: transparent;
     }
 
-    .arcade-img {
-      mix-blend-mode: screen
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
-      display: block;
-      transition: transform .12s cubic-bezier(.2,2,.3,1), filter .12s ease;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55));
-      z-index: 1;
-    }
+   .arcade-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transition: transform .12s cubic-bezier(.2,2,.3,1), filter .12s ease;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55));
+  mix-blend-mode: screen;
+  z-index: 1;
+  background: transparent;
+}
 
     /* Hover */
     .arcade-item:hover .arcade-img {
@@ -1066,6 +1069,11 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
