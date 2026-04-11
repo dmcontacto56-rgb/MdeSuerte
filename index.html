@@ -362,12 +362,10 @@
       user-select: none;
     }
 
-    /* Mount — sin background, sin overflow hidden */
     .arcade-mount {
       position: relative;
-      width: clamp(180px, 22vw, 280px);
-      height: clamp(150px, 18vw, 230px);
-      background: transparent;
+      width: clamp(200px, 24vw, 300px);
+      height: clamp(165px, 20vw, 250px);
     }
 
     .arcade-img {
@@ -378,7 +376,6 @@
       object-fit: contain;
       object-position: center;
       display: block;
-      background: transparent;
       transition: transform .12s cubic-bezier(.2,2,.3,1), filter .12s ease;
       filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55));
       z-index: 1;
@@ -831,22 +828,35 @@ document.querySelectorAll('.options').forEach(opts => {
   if (firstVid) firstVid.play().catch(()=>{});
 });
  
-// ── PARALLAX SCROLL ──
+// ── PARALLAX SCROLL + MOUSE ──
 (function() {
   const seps = document.querySelectorAll('.parallax-sep .par-bg');
   if (!seps.length) return;
-  function onScroll() {
+
+  let mouseX = 0, mouseY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;  // -1 to 1
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;  // -1 to 1
+    updateAll();
+  }, { passive: true });
+
+  function updateAll() {
     seps.forEach(bg => {
       const rect = bg.closest('.parallax-sep').getBoundingClientRect();
       const vh = window.innerHeight;
       if (rect.bottom < 0 || rect.top > vh) return;
       const progress = (vh - rect.top) / (vh + rect.height);
-      const offset = (progress - 0.5) * 80;
-      bg.style.transform = 'translateY(' + offset + 'px)';
+      const scrollOffset = (progress - 0.5) * 80;
+      const mx = mouseX * 18;
+      const my = mouseY * 12;
+      bg.style.transform = 'translate(' + mx + 'px, ' + (scrollOffset + my) + 'px)';
     });
   }
-  window.addEventListener('scroll', onScroll, { passive:true });
-  onScroll();
+
+  function onScroll() { updateAll(); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  updateAll();
 })();
  
 // ── SMOOTH SECTION TRANSITIONS ──
@@ -1039,7 +1049,6 @@ logoEl.style.transform = 'scale(0.7)';
 </script>
 </body>
 </html>
-
 
 
 
