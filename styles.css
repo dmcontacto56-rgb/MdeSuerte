@@ -513,33 +513,25 @@
   
     /* ══ DOME GALLERY ══════════════════════════════════════════════════ */
     .dome-gallery-wrap{width:100%;height:65vh;min-height:380px;max-height:680px;position:relative;margin-top:2rem;}
-    /* Override isolation on dome section — preserve-3d requires this */
-    #section-dome,
-    #section-dome * {
-      isolation: auto !important;
-    }
+    /* Dome section: disable isolation + overflow so preserve-3d works */
     #section-dome {
+      isolation: auto !important;
       overflow: visible !important;
       transform: none !important;
-      filter: none !important;
       will-change: auto !important;
     }
-    #section-dome .dome-gallery-wrap,
-    #section-dome .dg-wrap-inner,
-    #section-dome .dg-stage,
-    #section-dome .dg-sphere,
-    #section-dome .dg-item {
+    #section-dome .dome-gallery-wrap {
       isolation: auto !important;
       overflow: visible !important;
-      filter: none !important;
-      will-change: auto !important;
     }
-    /* Restore overflow:hidden only on the stage (clips the sphere edges) */
-    #section-dome .dg-main {
-      overflow: hidden !important;
+    #section-dome .dg-wrap-inner {
+      isolation: auto !important;
+      overflow: visible !important;
     }
-    #section-dome .dg-wrap-inner,
-    #section-dome .dg-stage,
+    /* CRITICAL: dg-stage clips the sphere visually but must NOT create stacking context */
+    #section-dome .dg-stage {
+      isolation: auto !important;
+    }
     #section-dome .dg-sphere,
     #section-dome .dg-item {
       isolation: auto !important;
