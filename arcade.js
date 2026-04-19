@@ -30,4 +30,8 @@
   initBtn('btn-cv','mac-quack.mp3',()=>{
     window.open('https://drive.google.com/file/d/1OAXlB97fISuBqANuq-OJSabIn_iJLCgi/view?usp=sharing','_blank','noopener');
   });
+  initBtn('btn-inicio','snkneo-geo-insert-coin-sound.mp3',()=>{
+    const hero = document.getElementById('hero');
+    if(hero) hero.scrollIntoView({behavior:'smooth'});
+  });
 })();
