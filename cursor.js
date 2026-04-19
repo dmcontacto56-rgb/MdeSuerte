@@ -135,16 +135,19 @@ new IntersectionObserver(entries => {
   navLinks.classList.toggle('show', entries[0].isIntersecting);
 }, { threshold: 0.1 }).observe(document.getElementById('hero'));
  
-// Logo: show ONLY when #hero or #contact is intersecting
-// Logo visible immediately on load
+// Logo: visible at hero load, hidden mid-page, visible again at contact
 navLogo.classList.add('show');
-// Hide when leaving hero
+let heroLeft = false;
 new IntersectionObserver(e => {
-  if (!e[0].isIntersecting) navLogo.classList.remove('show');
-  else navLogo.classList.add('show');
+  if (!e[0].isIntersecting) {
+    heroLeft = true;
+    navLogo.classList.remove('show');
+  } else {
+    heroLeft = false;
+    navLogo.classList.add('show');
+  }
 }, {threshold:0.05}).observe(document.getElementById('hero'));
-// Show again at contact
 new IntersectionObserver(e => {
   if (e[0].isIntersecting) navLogo.classList.add('show');
-  else navLogo.classList.remove('show');
+  else if (heroLeft) navLogo.classList.remove('show');
 }, {threshold:0.05}).observe(document.getElementById('contact'));
