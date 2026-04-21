@@ -90,6 +90,7 @@
   /* TILES */
   var unit = 360 / SEG;
   var tiles = [];
+  var tileData = []; // ← FIX: declarado ANTES del loop para que esté disponible
   var ii = 0;
 
   for (var c = 0; c < SEG; c++) {
@@ -119,7 +120,6 @@
 
   /* ROTATION */
   var rotX = 0, rotY = 0;
-  var tileData = []; // filled after tiles loop: {item, ry, rx}
 
   function applyT() {
     sphere.style.transform = "rotateX("+rotX+"deg) rotateY("+rotY+"deg)";
@@ -249,7 +249,6 @@
     scrim.classList.add("on");
     tile.style.visibility = "hidden";
     lb._tile = tile;
-    // Load image, then size to natural dimensions fitted to viewport
     img.onload = function() {
       var natW = img.naturalWidth  || 600;
       var natH = img.naturalHeight || 600;
