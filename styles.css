@@ -879,8 +879,9 @@
   pointer-events: none;
   opacity: 0.85;
   transition: opacity 0.3s;
-}
+    
 .option.active .video-badge { opacity: 0; }
+}
  
 /* ── HOVER (non-active) ── */
 .option:not(.active):hover .icon img,
