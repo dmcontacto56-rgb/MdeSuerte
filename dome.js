@@ -112,14 +112,28 @@
       item.appendChild(tile);
       sphere.appendChild(item);
       tiles.push({ tile:tile, src:imgData.src });
+      tileData.push({ item:item, ry:ry, rx:(-rx) });
       ii++;
     });
   }
 
   /* ROTATION */
   var rotX = 0, rotY = 0;
+  var tileData = []; // filled after tiles loop: {item, ry, rx}
+
   function applyT() {
     sphere.style.transform = "rotateX("+rotX+"deg) rotateY("+rotY+"deg)";
+    // Depth sort: reorder DOM so back tiles are first (painter's algorithm)
+    var ryRad = rotY * Math.PI / 180;
+    var rxRad = rotX * Math.PI / 180;
+    tileData.sort(function(a, b) {
+      // z = cos(item_ry + sphere_ry) * cos(item_rx + sphere_rx)
+      // lower z = further back = render first
+      var za = Math.sin(a.ry * Math.PI/180 + ryRad) * Math.cos(a.rx * Math.PI/180 + rxRad);
+      var zb = Math.sin(b.ry * Math.PI/180 + ryRad) * Math.cos(b.rx * Math.PI/180 + rxRad);
+      return za - zb; // back to front
+    });
+    tileData.forEach(function(d) { sphere.appendChild(d.item); });
   }
   applyT();
 
