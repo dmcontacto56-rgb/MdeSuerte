@@ -90,7 +90,6 @@
   /* TILES */
   var unit = 360 / SEG;
   var tiles = [];
-  var tileData = []; // ← FIX: declarado ANTES del loop para que esté disponible
   var ii = 0;
 
   for (var c = 0; c < SEG; c++) {
@@ -120,6 +119,7 @@
 
   /* ROTATION */
   var rotX = 0, rotY = 0;
+  var tileData = []; // filled after tiles loop: {item, ry, rx}
 
   function applyT() {
     sphere.style.transform = "rotateX("+rotX+"deg) rotateY("+rotY+"deg)";
@@ -221,8 +221,8 @@
   stage.addEventListener("mousedown",   function(e){ onDown(e.clientX, e.clientY); });
   document.addEventListener("mousemove",function(e){ onMove(e.clientX, e.clientY); });
   document.addEventListener("mouseup",  function()  { onUp(); });
-  stage.addEventListener("touchstart",  function(e){ var t=e.touches[0]; onDown(t.clientX,t.clientY); },{passive:true});
-  stage.addEventListener("touchmove",   function(e){ var t=e.touches[0]; onMove(t.clientX,t.clientY); },{passive:true});
+  stage.addEventListener("touchstart",  function(e){ var t=e.touches[0]; onDown(t.clientX,t.clientY); },{passive:false});
+  stage.addEventListener("touchmove",   function(e){ e.preventDefault(); var t=e.touches[0]; onMove(t.clientX,t.clientY); },{passive:false});
   stage.addEventListener("touchend",    function()  { onUp(); });
 
   /* LIGHTBOX */
@@ -249,6 +249,7 @@
     scrim.classList.add("on");
     tile.style.visibility = "hidden";
     lb._tile = tile;
+    // Load image, then size to natural dimensions fitted to viewport
     img.onload = function() {
       var natW = img.naturalWidth  || 600;
       var natH = img.naturalHeight || 600;
