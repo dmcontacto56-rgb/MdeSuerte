@@ -60,9 +60,9 @@
   ];
 
   var SEG   = 24;
-  var R     = 480;
-  var TW    = 100;
-  var TH    = 100;
+  var R     = 560;
+  var TW    = 82;
+  var TH    = 82;
   var SENS  = 0.08;
   var MAX_X = 12;
 
@@ -101,7 +101,7 @@
       item.style.transform = "rotateY("+ry+"deg) rotateX("+(-rx)+"deg) translateZ("+R+"px)";
       item.style.zIndex = Math.round(50 - Math.abs(rx));
       var tile = document.createElement("div"); tile.className = "dg-tile";
-      var gap = 6;
+      var gap = 8;
       tile.style.width  = (TW - gap)+"px";
       tile.style.height = (TH - gap)+"px";
       tile.style.left   = (-(TW-gap)/2)+"px";
@@ -292,9 +292,6 @@
       if (now - lastTap < 300) { e.preventDefault(); if (!moved) openLightbox(t.tile, t.src); }
       lastTap = now;
     }, {passive:false});
-  });
-
-})();
   });
 
 })();
