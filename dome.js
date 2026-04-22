@@ -90,6 +90,7 @@
   /* TILES */
   var unit = 360 / SEG;
   var tiles = [];
+  var tileData = []; // ← FIX: declarado ANTES del loop para que esté disponible
   var ii = 0;
 
   for (var c = 0; c < SEG; c++) {
@@ -112,16 +113,27 @@
       item.appendChild(tile);
       sphere.appendChild(item);
       tiles.push({ tile:tile, src:imgData.src });
+      tileData.push({ item:item, ry:ry, rx:(-rx) });
       ii++;
-/* ROTATION */
-      var rotX = 0, rotY = 0;
-      function applyT() {
-    sphere.style.transform = "rotateX("+rotX+"deg) rotateY("+rotY+"deg)";
-      
     });
   }
 
-  
+  /* ROTATION */
+  var rotX = 0, rotY = 0;
+
+  function applyT() {
+    sphere.style.transform = "rotateX("+rotX+"deg) rotateY("+rotY+"deg)";
+    // Depth sort: reorder DOM so back tiles are first (painter's algorithm)
+    var ryRad = rotY * Math.PI / 180;
+    var rxRad = rotX * Math.PI / 180;
+    tileData.sort(function(a, b) {
+      // z = cos(item_ry + sphere_ry) * cos(item_rx + sphere_rx)
+      // lower z = further back = render first
+      var za = Math.sin(a.ry * Math.PI/180 + ryRad) * Math.cos(a.rx * Math.PI/180 + rxRad);
+      var zb = Math.sin(b.ry * Math.PI/180 + ryRad) * Math.cos(b.rx * Math.PI/180 + rxRad);
+      return za - zb; // back to front
+    });
+    tileData.forEach(function(d) { sphere.appendChild(d.item); });
   }
   applyT();
 
@@ -225,17 +237,18 @@
     var img = document.createElement("img");
     img.style.cssText = "display:block;max-width:100%;max-height:100%;object-fit:contain;";
     lb.appendChild(img);
-    lb.style.left    = (r.left - wr.left)+"px";
-    lb.style.top     = (r.top  - wr.top )+"px";
-    lb.style.width   = r.width +"px";
-    lb.style.height  = r.height+"px";
-    lb.style.opacity = "0";
+    lb.style.left       = (r.left - wr.left)+"px";
+    lb.style.top        = (r.top  - wr.top )+"px";
+    lb.style.width      = r.width +"px";
+    lb.style.height     = r.height+"px";
+    lb.style.opacity    = "0";
     lb.style.background = "transparent";
+    lb.style.minWidth   = "0";
+    lb.style.minHeight  = "0";
     inner.appendChild(lb);
     scrim.classList.add("on");
     tile.style.visibility = "hidden";
     lb._tile = tile;
-    // Load image, then size to natural dimensions fitted to viewport
     img.onload = function() {
       var natW = img.naturalWidth  || 600;
       var natH = img.naturalHeight || 600;
