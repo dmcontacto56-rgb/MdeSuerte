@@ -304,7 +304,31 @@
     @media (max-width: 640px) {
       #hero .hero-right { height: 40vh; }
       #hero h1 { font-size: clamp(2.8rem, 15vw, 6rem); }
-      nav ul { display:none; }
+     nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    transition: transform 0.3s ease-in-out; /* Animación suave al ocultar */
+    z-index: 1000;
+}
+
+nav ul {
+    display: flex;             /* Alinea en fila */
+    justify-content: flex-end; /* Lo lleva a la derecha */
+    list-style: none;
+    padding: 20px 50px;
+    margin: 0;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+/* Esta clase la añadiremos con JavaScript */
+.nav-hidden {
+    transform: translateY(-100%); /* Desplaza el menú hacia arriba fuera de la vista */
+}
       .services-grid { grid-template-columns: 1fr; }
       .gallery-grid { columns: 1; }
       .gallery-container { grid-template-columns: 1fr; }
