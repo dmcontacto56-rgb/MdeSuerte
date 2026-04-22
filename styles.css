@@ -76,7 +76,7 @@
     #hero .label {
       font-size: clamp(.6rem,.7rem + .1vw,.85rem);
       letter-spacing:.35em; text-transform:uppercase; color:#04D939;
-      margin-bottom:1rem; opacity:0; animation:fadeUp .8s .3s forwards;
+      margin-bottom:1rem; opacity:0; animation:fadeUp .5s .3s forwards;
     }
     #hero h1 {
       font-family:'Bebas Neue',sans-serif;
@@ -820,13 +820,13 @@
       .anim-module iframe,
       #globe-banner iframe {
         width: 1080px !important;
-        height: 566px !important;
+        height: 7006px !important;
         max-width: none !important;
         transform-origin: top left;
         transform: scale(calc(100vw / 1080));
       }
       .anim-module {
-        height: calc(566px * (100vw / 1080)) !important;
+        height: calc(700px * (100vw / 1080)) !important;
         overflow: hidden;
       }
     }
