@@ -65,12 +65,6 @@ nav ul li {
     margin-left: 20px;
 }
 
-/* Esta clase la añadiremos con JavaScript */
-.nav-hidden {
-    transform: translateY(-100%); /* Desplaza el menú hacia arriba fuera de la vista */
-    nav ul.show { opacity:1; pointer-events:auto; }
-    nav ul a { color:var(--fg); text-decoration:none; font-size:clamp(.55rem,.65rem + .1vw,.7rem); letter-spacing:.25em; text-transform:uppercase; }
-    nav ul a:hover { color:var(--accent); }
  
     /* ═══ HERO ═══ */
     #hero {
