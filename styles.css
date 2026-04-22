@@ -45,7 +45,8 @@
  
     /* ═══ NAV ═══ */
     nav {
-      position: fixed; top:0; left:0; right:0; z-index:100;
+      position: fixed; top:0; left:0; right:0; width: 100%; z-index:1000; 
+      transition: transform 0.3s ease-in-out; /* Animación suave al ocultar */
       display:flex; justify-content:space-between; align-items:center;
       padding: 1.2rem clamp(1.5rem, 5vw, 4rem);
       mix-blend-mode: difference;
@@ -54,6 +55,19 @@
     nav .logo.show { opacity:1; pointer-events:auto; }
     nav .logo img { height:32px; width:auto; }
     nav ul { opacity:0; pointer-events:none; transition:opacity .5s; list-style:none; display:flex; gap:2rem; }
+    justify-content: flex-end; /* Lo lleva a la derecha */
+    list-style: none;
+    padding: 20px 50px;
+    margin: 0;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+/* Esta clase la añadiremos con JavaScript */
+.nav-hidden {
+    transform: translateY(-100%); /* Desplaza el menú hacia arriba fuera de la vista */
     nav ul.show { opacity:1; pointer-events:auto; }
     nav ul a { color:var(--fg); text-decoration:none; font-size:clamp(.55rem,.65rem + .1vw,.7rem); letter-spacing:.25em; text-transform:uppercase; }
     nav ul a:hover { color:var(--accent); }
