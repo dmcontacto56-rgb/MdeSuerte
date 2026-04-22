@@ -45,7 +45,7 @@
  
     /* ═══ NAV ═══ */
     nav {
-      position: fixed; top:0; left:0; right:0; width: 10%; z-index:100; 
+      position: fixed; top:0; left:0; right:0; width: 100%; z-index:1000; 
       transition: transform 0.3s ease-in-out; /* Animación suave al ocultar */
       display:flex; justify-content:space-between; align-items:center;
       padding: 1.2rem clamp(1.5rem, 5vw, 4rem);
