@@ -7,6 +7,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <link rel="stylesheet" href="weather-widget.css"/>
   <style>
+    /* In rain.html: widget is absolute (not fixed) so it stays inside the iframe */
+    #weather-widget {
+      position: absolute !important;
+      bottom: auto !important;
+      right: auto !important;
+    }
+    #dash-backdrop, #dash-overlay { position: fixed; }
+  </style>
+  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #000;
@@ -24,7 +33,9 @@
       transform: translate(-50%, -50%);
     }
     #hud {
-      position: fixed; top: 24px; left: 24px;
+      position: absolute;
+      top: 60px;  /* below the anim-label text */
+      left: 24px;
       display: inline-flex; flex-direction: column; gap: 10px;
       background: var(--panel-bg); border-radius: 14px;
       padding: 14px 16px;
@@ -64,14 +75,14 @@
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         width: 100vw !important;
-        height: 100vw !important;  /* cuadrado 1:1 */
+        height: 100vw !important;
       }
 
-      /* HUD: mini, arriba derecha */
+      /* HUD: mini, arriba IZQUIERDA */
       #hud {
         top: 14px;
-        left: auto;
-        right: 12px;
+        left: 12px;
+        right: auto;
         bottom: auto;
         padding: 7px 9px;
         gap: 5px;
@@ -84,15 +95,6 @@
       .ctrl label { font-size: 7px; width: 46px; letter-spacing: 0.06em; }
       .ctrl input[type=range] { width: 52px; }
       .ctrl .val { font-size: 8px; min-width: 16px; }
-
-      /* Widget del clima: debajo del HUD, mismo lado derecho */
-      #weather-widget {
-        top: auto;
-        bottom: auto;
-        right: 12px;
-        /* se posiciona dinámicamente via JS */
-        position: fixed;
-      }
     }
   </style>
 </head>
@@ -266,7 +268,7 @@ new p5(function(p) {
 
 <script src="weather-widget.js"></script>
 <script>
-/* ── Móvil: posicionar widget debajo del HUD y canvas cuadrado ── */
+/* ── Móvil: posicionar widget debajo del HUD izquierda y canvas cuadrado ── */
 (function() {
   function isMobile() { return window.innerWidth <= 640; }
 
@@ -278,8 +280,8 @@ new p5(function(p) {
     var hudRect = hud.getBoundingClientRect();
     widget.style.top    = (hudRect.bottom + 10) + 'px';
     widget.style.bottom = 'auto';
-    widget.style.right  = '12px';
-    widget.style.left   = 'auto';
+    widget.style.left   = '12px';
+    widget.style.right  = 'auto';
   }
 
   function squareCanvas() {
