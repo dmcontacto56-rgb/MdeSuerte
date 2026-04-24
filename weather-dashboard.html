@@ -14,12 +14,16 @@
     --text: #e8eaf0; --muted: #6b7592;
     --border: rgba(0,194,255,0.15);
   }
-  html, body { height: 100%; }
+  html { height: 100%; }
   body {
     background: var(--bg); color: var(--text);
     font-family: 'Inter', sans-serif;
     padding: 14px; overflow-x: hidden; overflow-y: auto;
+    /* Hide scrollbar cross-browser */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  body::-webkit-scrollbar { display: none; }
   body::before {
     content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
     background-image: linear-gradient(rgba(0,194,255,.03) 1px,transparent 1px),
@@ -330,16 +334,19 @@ function render(data, fromCache) {
   var todayIdx = data.daily.findIndex(function(d){ return d.date===today; });
   if (todayIdx<0) todayIdx=0; // fallback
   var threeDays = data.daily.slice(todayIdx, todayIdx+3);
-  var labels = ['HOY','MAÑANA','PASADO'];
-
+  /* Label: HOY+DIADELASEMANA / día siguiente / pasado */
+  var todayDow = DAYS_ES[new Date().getDay()].toUpperCase();
   var grid = document.getElementById('days-row');
   grid.innerHTML = '';
   threeDays.forEach(function(d,i){
     var wi = wmoInfo(d.code);
     var card = document.createElement('div');
     card.className = 'day-card d'+(i+4)+(i===0?' today':'');
+    var dDate = new Date(d.date+'T12:00:00');
+    var dow = DAYS_ES[dDate.getDay()].toUpperCase();
+    var lbl = i===0 ? 'HOY · '+dow : dow;
     card.innerHTML =
-      '<div class="dn">'+labels[i]+'</div>'+
+      '<div class="dn">'+lbl+'</div>'+
       '<div class="di">'+wi.icon+'</div>'+
       '<div class="dt">'+d.max+'°</div>'+
       '<div class="rb"><div class="rbf" data-p="'+d.rain+'"></div></div>'+
