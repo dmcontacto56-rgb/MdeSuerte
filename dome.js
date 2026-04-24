@@ -60,10 +60,12 @@
   ];
 
   var isMobile = window.innerWidth <= 640;
-  var SEG   = isMobile ? 14 : 24;
-  var R     = isMobile ? 280 : 560;
-  var TW    = isMobile ? 72  : 82;
-  var TH    = isMobile ? 72  : 82;
+  /* En móvil: radio grande para que los tiles tengan suficiente separación
+     entre sí en el arco. rows reducidos a 3 por columna con mayor ángulo */
+  var SEG   = isMobile ? 12 : 24;
+  var R     = isMobile ? 420 : 560;
+  var TW    = isMobile ? 78  : 82;
+  var TH    = isMobile ? 78  : 82;
   var SENS  = 0.08;
   var MAX_X = 12;
 
@@ -94,8 +96,17 @@
   var tileData = [];
   var ii = 0;
 
+  /* En móvil: 3 filas con 20° de separación para no encimarse.
+     En desktop: 5 filas con 8° de separación original */
+  var mobileRows0 = [-20, 0, 20];
+  var mobileRows1 = [-10, 10, 28];
+  var desktopRows0 = [-16,-8,0,8,16];
+  var desktopRows1 = [-12,-4,4,12,20];
+
   for (var c = 0; c < SEG; c++) {
-    var rows = (c % 2 === 0) ? [-16,-8,0,8,16] : [-12,-4,4,12,20];
+    var rows = isMobile
+      ? (c % 2 === 0 ? mobileRows0 : mobileRows1)
+      : (c % 2 === 0 ? desktopRows0 : desktopRows1);
     var ry = c * unit;
     rows.forEach(function(rx) {
       var item = document.createElement("div"); item.className = "dg-item";
@@ -298,5 +309,3 @@
   });
 
 })();
-
-
