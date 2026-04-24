@@ -546,17 +546,19 @@
  
   
     /* ══ DOME GALLERY ══════════════════════════════════════════════════ */
-    .dome-gallery-wrap{width:100%;height:70vh;min-height:440px;max-height:740px;position:relative;margin-top:4rem;}
-    /* Parent containers must not break preserve-3d */
+    .dome-gallery-wrap{
+      width:100%;height:70vh;min-height:440px;max-height:740px;
+      position:relative;margin-top:4rem;
+      overflow:hidden;
+    }
     #galleries {
       isolation: auto !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       transform: none !important;
     }
-    /* Dome section: disable isolation so preserve-3d works */
     #section-dome {
       isolation: auto !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       transform: none !important;
       will-change: auto !important;
       position: relative;
@@ -568,21 +570,29 @@
     }
     #section-dome .dome-gallery-wrap {
       isolation: auto !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       position: relative;
       z-index: 1;
     }
     #section-dome .dg-wrap-inner {
       isolation: auto !important;
-      overflow: visible !important;
+      overflow: hidden !important;
     }
     #section-dome .dg-stage {
       isolation: auto !important;
+      overflow: hidden;
       z-index: 1;
     }
     #section-dome .dg-sphere,
     #section-dome .dg-item {
       isolation: auto !important;
+    }
+    @media (max-width: 640px) {
+      .dome-gallery-wrap {
+        height: 55vw;
+        min-height: 280px;
+        max-height: 400px;
+      }
     }
 
     .dg-wrap-inner{width:100%;height:100%;position:relative;}
@@ -981,3 +991,4 @@
         transform: none !important;
       }
     }
+
