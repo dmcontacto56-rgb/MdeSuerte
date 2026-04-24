@@ -171,13 +171,16 @@
 }
 
 .sheet-handle {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 12px;
+  padding: 14px 20px 12px;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(0,255,224,0.08);
+  background: #0a0d14;
 }
 
 .handle-bar {
@@ -221,7 +224,15 @@
   width: 100%;
   border: none;
   display: block;
+  overflow-y: auto;
 }
+
+/* Hide scrollbar inside iframe container */
+#dash-sheet {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#dash-sheet::-webkit-scrollbar { display: none; }
 
 /* ── Desktop: panel lateral ── */
 @media (min-width: 640px) {
