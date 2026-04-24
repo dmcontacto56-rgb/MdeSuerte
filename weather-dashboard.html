@@ -377,7 +377,11 @@ function renderDashboard(data, fromCache) {
   /* Forecast */
   var grid = document.getElementById('forecast-grid');
   grid.innerHTML = '';
-  var today = new Date().toISOString().slice(0,10);
+  /* Fecha local CDMX — evitar desfase UTC */
+  var now = new Date();
+  var today = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0');
   var dayNames = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
   data.daily.forEach(function(d, i) {
     var isToday = d.date === today;
