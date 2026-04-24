@@ -14,14 +14,11 @@
     --text: #e8eaf0; --muted: #6b7592;
     --border: rgba(0,194,255,0.15);
   }
-  html { height: 100%; }
   body {
     background: var(--bg); color: var(--text);
     font-family: 'Inter', sans-serif;
     padding: 14px; overflow-x: hidden; overflow-y: auto;
-    /* Hide scrollbar cross-browser */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none; -ms-overflow-style: none;
   }
   body::-webkit-scrollbar { display: none; }
   body::before {
@@ -77,8 +74,109 @@
     padding:16px; position:relative; overflow:hidden;
     opacity:0; animation:fade-up .5s ease forwards;
   }
-  .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:.6; }
+  .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:.6; z-index:1; }
   .panel.orange::before { background:linear-gradient(90deg,transparent,var(--accent3),transparent); }
+  .panel > * { position:relative; z-index:1; }
+
+  /* ── Weather backgrounds ── */
+  .wx-bg { position:absolute; inset:0; z-index:0; overflow:hidden; border-radius:12px; }
+
+  /* CLEAR / SUNNY */
+  .wx-clear .wx-bg {
+    background: radial-gradient(ellipse at 70% 20%, rgba(255,209,102,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 80%, rgba(255,160,0,0.08) 0%, transparent 50%);
+  }
+  .wx-clear .wx-bg::after {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:110px; height:110px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,209,102,0.35) 0%, rgba(255,160,0,0.1) 50%, transparent 70%);
+    animation: sun-pulse 4s ease-in-out infinite;
+  }
+  @keyframes sun-pulse {
+    0%,100%{ transform:scale(1); opacity:.8; }
+    50%{ transform:scale(1.12); opacity:1; }
+  }
+
+  /* PARTLY CLOUDY */
+  .wx-partly .wx-bg {
+    background: radial-gradient(ellipse at 60% 15%, rgba(255,209,102,0.12) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(100,120,160,0.08) 0%, transparent 60%);
+  }
+  .wx-partly .wx-bg::before,
+  .wx-partly .wx-bg::after {
+    content:''; position:absolute; border-radius:50%;
+    background: rgba(180,200,230,0.06);
+    animation: cloud-drift 8s ease-in-out infinite;
+  }
+  .wx-partly .wx-bg::before { width:160px; height:60px; top:15px; left:-10px; border-radius:40px; animation-delay:0s; }
+  .wx-partly .wx-bg::after  { width:100px; height:40px; top:35px; right:10px; border-radius:30px; animation-delay:-3s; }
+  @keyframes cloud-drift {
+    0%,100%{ transform:translateX(0); }
+    50%{ transform:translateX(12px); }
+  }
+
+  /* CLOUDY / OVERCAST */
+  .wx-cloudy .wx-bg {
+    background: linear-gradient(180deg, rgba(80,90,110,0.2) 0%, rgba(40,50,70,0.1) 100%);
+  }
+  .wx-cloudy .wx-bg::before,
+  .wx-cloudy .wx-bg::after {
+    content:''; position:absolute; border-radius:40px;
+    background: rgba(150,170,200,0.07);
+    animation: cloud-drift 10s ease-in-out infinite;
+  }
+  .wx-cloudy .wx-bg::before { width:200px; height:70px; top:10px; left:-20px; animation-delay:0s; }
+  .wx-cloudy .wx-bg::after  { width:150px; height:50px; top:45px; right:-10px; animation-delay:-5s; }
+
+  /* RAIN / DRIZZLE */
+  .wx-rain .wx-bg {
+    background: linear-gradient(180deg, rgba(30,50,90,0.25) 0%, rgba(10,20,50,0.15) 100%);
+  }
+  .wx-rain .wx-bg::before {
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(
+        175deg,
+        transparent 0px, transparent 8px,
+        rgba(0,194,255,0.07) 8px, rgba(0,194,255,0.07) 9px
+      );
+    animation: rain-anim 1.2s linear infinite;
+  }
+  @keyframes rain-anim {
+    0%{ background-position:0 0; }
+    100%{ background-position:-20px 80px; }
+  }
+
+  /* STORM */
+  .wx-storm .wx-bg {
+    background: linear-gradient(180deg, rgba(20,10,60,0.35) 0%, rgba(10,5,30,0.2) 100%);
+    animation: storm-flash 6s ease-in-out infinite;
+  }
+  @keyframes storm-flash {
+    0%,90%,100%{ filter:brightness(1); }
+    92%{ filter:brightness(1.4); }
+    94%{ filter:brightness(1); }
+    96%{ filter:brightness(1.5); }
+  }
+  .wx-storm .wx-bg::before {
+    content:''; position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(
+        172deg, transparent 0px, transparent 6px,
+        rgba(123,92,250,0.1) 6px, rgba(123,92,250,0.1) 7px
+      );
+    animation: rain-anim .8s linear infinite;
+  }
+
+  /* FOG / MIST */
+  .wx-fog .wx-bg {
+    background: linear-gradient(180deg, rgba(150,160,180,0.12) 0%, transparent 100%);
+    animation: fog-drift 6s ease-in-out infinite alternate;
+  }
+  @keyframes fog-drift {
+    0%{ opacity:.7; } 100%{ opacity:1; }
+  }
   .plbl { font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; font-family:'Orbitron',monospace; }
   .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,194,255,.4),transparent); animation:scan 4s linear infinite; pointer-events:none; }
   @keyframes scan { 0%{top:0;opacity:1} 100%{top:100%;opacity:0} }
@@ -181,14 +279,16 @@
 
   <!-- Hero -->
   <div class="hero">
-    <div class="panel d2">
+    <div class="panel d2" id="panel-temp">
+      <div class="wx-bg" id="wx-bg-left"></div>
       <div class="scan"></div>
       <div class="plbl">Temperatura actual</div>
       <div class="big-temp"><span id="cur-temp">--</span><span>°C</span></div>
       <div class="cond-row"><span id="cond-icon">☁️</span><span id="cond-txt">...</span></div>
       <div class="loc-row">📍 CDMX · 19.43°N 99.13°O · 2,240 msnm</div>
     </div>
-    <div class="panel orange d3">
+    <div class="panel orange d3" id="panel-rain">
+      <div class="wx-bg" id="wx-bg-right"></div>
       <div class="plbl">Lluvia hoy</div>
       <div class="rain-big"><span id="rain-pct">--</span><span>%</span></div>
       <div class="rain-desc" id="rain-desc">Cargando...</div>
@@ -367,6 +467,27 @@ function render(data, fromCache) {
   document.getElementById('s-rain').textContent  = avgR;
   document.getElementById('s-best').textContent  = DAYS_ES[bestD.getDay()].toUpperCase()+' '+bestD.getDate();
   document.getElementById('s-alert').textContent = trafficLvl(rp);
+
+  /* Apply weather background class to both hero panels */
+  var wxClass = wmoToWxClass(data.curCode, rp);
+  var pt = document.getElementById('panel-temp');
+  var pr = document.getElementById('panel-rain');
+  [pt, pr].forEach(function(p) {
+    if (!p) return;
+    p.classList.remove('wx-clear','wx-partly','wx-cloudy','wx-rain','wx-storm','wx-fog');
+    p.classList.add(wxClass);
+  });
+}
+
+function wmoToWxClass(code, rainPct) {
+  if (code >= 95) return 'wx-storm';
+  if (code >= 51) return 'wx-rain';
+  if (code >= 45) return 'wx-fog';
+  if (rainPct >= 50) return 'wx-rain';
+  if (code === 3)  return 'wx-cloudy';
+  if (code === 2 || code === 1) return 'wx-partly';
+  if (code === 0)  return 'wx-clear';
+  return 'wx-partly';
 }
 
 fetchWeather(false);
