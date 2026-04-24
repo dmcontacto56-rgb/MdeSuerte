@@ -59,10 +59,11 @@
     { src:"https://raw.githubusercontent.com/dmcontacto56-rgb/MdeSuerte/8596465f5987674330fa93775ec30dc05d5d0e10/21.png", alt:"21" },
   ];
 
-  var SEG   = 24;
-  var R     = 560;
-  var TW    = 82;
-  var TH    = 82;
+  var isMobile = window.innerWidth <= 640;
+  var SEG   = isMobile ? 14 : 24;
+  var R     = isMobile ? 280 : 560;
+  var TW    = isMobile ? 72  : 82;
+  var TH    = isMobile ? 72  : 82;
   var SENS  = 0.08;
   var MAX_X = 12;
 
@@ -297,4 +298,5 @@
   });
 
 })();
+
 
