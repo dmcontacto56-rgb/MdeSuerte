@@ -976,6 +976,12 @@
         transform: none !important;
         transform-origin: top left;
       }
+      /* Rain module en móvil: formato cuadrado 1:1 (post Instagram) */
+      #rain-module {
+        height: 100vw !important;
+        max-height: 100vw !important;
+        min-height: 100vw !important;
+      }
       /* Globe banner */
       #globe-banner,
       .hero-right {
@@ -991,4 +997,3 @@
         transform: none !important;
       }
     }
-
