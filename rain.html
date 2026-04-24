@@ -53,6 +53,27 @@
       border: none; cursor: pointer;
     }
     .ctrl .val { font-size: 11px; color: var(--text); min-width: 26px; text-align: right; }
+
+    /* ── Mobile: HUD compacto, posicionado abajo ── */
+    @media (max-width: 640px) {
+      #hud {
+        top: auto;
+        bottom: 100px;
+        left: 12px;
+        padding: 8px 10px;
+        gap: 6px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transform: scale(0.88);
+        transform-origin: bottom left;
+      }
+      .ctrl label { font-size: 8px; width: 52px; }
+      .ctrl input[type=range] { width: 56px; }
+      .ctrl .val { font-size: 9px; min-width: 18px; }
+      #weather-widget { bottom: 20px; right: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -226,3 +247,4 @@ new p5(function(p) {
 <script src="weather-widget.js"></script>
 </body>
 </html>
+
