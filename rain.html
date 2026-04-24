@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rain — M de Suerte</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <link rel="stylesheet" href="weather-widget.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg: #000;
       --panel-bg: rgba(255,255,255,0.04);
@@ -15,90 +15,85 @@
       --text-dim: rgba(255,255,255,0.35);
       --accent: #00ffe0;
     }
-
     body { background: var(--bg); overflow: hidden; cursor: none; font-family: 'Courier New', monospace; }
     canvas { display: block; }
-
     #cursor {
-      position: fixed;
-      width: 4px; height: 4px;
-      background: #fff;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
+      position: fixed; width: 4px; height: 4px;
+      background: #fff; border-radius: 50%;
+      pointer-events: none; z-index: 9999;
       transform: translate(-50%, -50%);
     }
-
-    /* ── HUD panel — columna top-left ── */
     #hud {
-      position: fixed;
-      top: 24px;
-      left: 24px;
-      display: inline-flex;
-      flex-direction: column;
-      gap: 10px;
-      background: var(--panel-bg);
-      border: none;
-      border-radius: 14px;
+      position: fixed; top: 24px; left: 24px;
+      display: inline-flex; flex-direction: column; gap: 10px;
+      background: var(--panel-bg); border-radius: 14px;
       padding: 14px 16px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       z-index: 10;
     }
-
-    .ctrl {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .ctrl { display: flex; align-items: center; gap: 8px; }
     .ctrl label {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      white-space: nowrap;
-      width: 68px;
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); white-space: nowrap; width: 68px;
     }
-
     .ctrl input[type=range] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 80px;
-      height: 2px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      width: 80px; height: 2px;
+      background: rgba(255,255,255,0.15); border-radius: 2px;
+      outline: none; cursor: pointer;
     }
     .ctrl input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      cursor: pointer;
+      -webkit-appearance: none; width: 12px; height: 12px;
+      border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 8px var(--accent); cursor: pointer;
     }
     .ctrl input[type=range]::-moz-range-thumb {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      border: none;
-      cursor: pointer;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 8px var(--accent);
+      border: none; cursor: pointer;
     }
-
-    .ctrl .val {
-      font-size: 11px;
-      color: var(--text);
-      min-width: 26px;
-      text-align: right;
-    }
+    .ctrl .val { font-size: 11px; color: var(--text); min-width: 26px; text-align: right; }
   </style>
 </head>
 <body>
 
 <div id="cursor"></div>
+
+<div id="weather-widget" role="button" aria-label="Ver dashboard del clima" tabindex="0">
+  <div class="w-icon">
+    <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 22c0-4.4 3.6-8 8-8 .5 0 1 .05 1.5.13A5.5 5.5 0 0 1 30 17.5c0 .17-.01.34-.02.5H30a4 4 0 0 1 0 8H10a4 4 0 0 1 0-8z"
+            fill="rgba(0,255,224,0.18)" stroke="rgba(0,255,224,0.6)" stroke-width="1.2"/>
+    </svg>
+    <div class="drop"></div>
+    <div class="drop"></div>
+    <div class="drop"></div>
+  </div>
+  <div class="w-info">
+    <div class="w-temp">19°C</div>
+    <div class="w-cond">Nublado · 28% lluvia</div>
+  </div>
+  <div class="w-arrow">
+    <svg viewBox="0 0 10 10">
+      <polyline points="2,8 5,5 8,8"/>
+      <line x1="5" y1="5" x2="5" y2="1"/>
+    </svg>
+  </div>
+  <div class="w-badge">28%</div>
+</div>
+
+<div id="dash-backdrop"></div>
+
+<div id="dash-overlay" role="dialog" aria-modal="true" aria-label="Dashboard del clima">
+  <div id="dash-sheet">
+    <div class="sheet-handle">
+      <div class="handle-bar"></div>
+      <span class="sheet-title">Weather Intel · CDMX</span>
+      <div class="sheet-close" id="dash-close" aria-label="Cerrar">✕</div>
+    </div>
+    <iframe id="dash-frame" src="weather-dashboard.html" title="Dashboard del clima CDMX" loading="lazy"></iframe>
+  </div>
+</div>
 
 <div id="hud">
   <div class="ctrl">
@@ -132,7 +127,6 @@ document.addEventListener('mousemove', e => {
   cursor.style.top  = my + 'px';
 });
 
-/* ── param helpers ── */
 function getParams() {
   return {
     num:      +document.getElementById('r-num').value,
@@ -142,7 +136,6 @@ function getParams() {
   };
 }
 
-/* ── wire controls ── */
 [['num','v-num'],['spd','v-spd'],['col','v-col'],['rep','v-rep']].forEach(([k, vId]) => {
   const inp = document.getElementById('r-' + k);
   const out = document.getElementById(vId);
@@ -152,46 +145,38 @@ function getParams() {
 new p5(function(p) {
   let drops = [];
 
-  /* 0 = blanco puro, 100 = RGB completamente aleatorio */
   function randomColor(colShift) {
     const t = colShift / 100;
-    const r = p.lerp(255, p.random(255), t);
-    const g = p.lerp(255, p.random(255), t);
-    const b = p.lerp(255, p.random(255), t);
-    return p.color(r, g, b);
+    return p.color(
+      p.lerp(255, p.random(255), t),
+      p.lerp(255, p.random(255), t),
+      p.lerp(255, p.random(255), t)
+    );
   }
 
   class Drop {
     constructor() { this.init(); }
-
     init() {
       const { speedMul, colShift } = getParams();
-      this.x      = p.random(p.width);
-      this.y      = p.random(-300, 0);
-      this.speed  = p.random(1, 4) * (speedMul / 2);
-      this.c      = randomColor(colShift);
-      this.eX     = 0;
-      this.eY     = 0;
+      this.x = p.random(p.width);
+      this.y = p.random(-300, 0);
+      this.speed = p.random(1, 4) * (speedMul / 2);
+      this.c = randomColor(colShift);
+      this.eX = 0; this.eY = 0;
       this.endPos = p.height - p.random(300);
-      this.done   = false;
-      this.vx     = 0;
-      this.vy     = 0;
+      this.done = false; this.vx = 0; this.vy = 0;
     }
-
     update() {
       const { mouseR } = getParams();
-
       if (this.done) {
         this.eX += this.speed * 0.2;
         this.eY += this.speed * 0.5;
         if (this.eX > 50) this.init();
         return;
       }
-
       if (mouseR > 0) {
-        const dx = this.x - mx;
-        const dy = this.y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dx = this.x - mx, dy = this.y - my;
+        const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist < mouseR && dist > 0) {
           const force = (mouseR - dist) / mouseR;
           const angle = Math.atan2(dy, dx);
@@ -199,31 +184,20 @@ new p5(function(p) {
           this.vy += Math.sin(angle) * force * 4;
         }
       }
-
-      this.vx *= 0.85;
-      this.vy *= 0.85;
-      this.x  += this.vx;
-      this.y  += this.speed + this.vy;
-
+      this.vx *= 0.85; this.vy *= 0.85;
+      this.x += this.vx; this.y += this.speed + this.vy;
       if (this.x < 0) { this.x = 0; this.vx *= -0.5; }
       if (this.x > p.width) { this.x = p.width; this.vx *= -0.5; }
-
-      if (this.y >= this.endPos) {
-        this.y = this.endPos;
-        this.done = true;
-      }
+      if (this.y >= this.endPos) { this.y = this.endPos; this.done = true; }
     }
-
     draw() {
       if (!this.done) {
-        p.fill(this.c);
-        p.noStroke();
+        p.fill(this.c); p.noStroke();
         p.rect(this.x, this.y, 2, 15);
       } else {
         const fade = p.map(this.eX, 0, 50, 255, 0);
         p.stroke(p.red(this.c), p.green(this.c), p.blue(this.c), fade);
-        p.strokeWeight(0.8);
-        p.noFill();
+        p.strokeWeight(0.8); p.noFill();
         p.ellipse(this.x, this.endPos, this.eX * 2, this.eY * 0.35);
       }
     }
@@ -240,17 +214,15 @@ new p5(function(p) {
     const { num } = getParams();
     while (drops.length < num) drops.push(new Drop());
     while (drops.length > num) drops.pop();
-
-    p.fill(0, 70);
-    p.noStroke();
+    p.fill(0, 70); p.noStroke();
     p.rect(0, 0, p.width, p.height);
     drops.forEach(d => { d.update(); d.draw(); });
   };
 
-  p.windowResized = function() {
-    p.resizeCanvas(window.innerWidth, window.innerHeight);
-  };
+  p.windowResized = function() { p.resizeCanvas(window.innerWidth, window.innerHeight); };
 });
 </script>
+
+<script src="weather-widget.js"></script>
 </body>
 </html>
