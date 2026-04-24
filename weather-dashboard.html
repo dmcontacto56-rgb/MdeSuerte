@@ -28,14 +28,16 @@
     background-size: 40px 40px;
   }
   body::after {
-    content:''; position:fixed; inset:-50%; pointer-events:none; z-index:0;
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
     background: radial-gradient(ellipse at 30% 20%,rgba(0,194,255,.06) 0%,transparent 50%),
                 radial-gradient(ellipse at 70% 80%,rgba(123,92,250,.06) 0%,transparent 50%);
     animation: pulse-bg 8s ease-in-out infinite alternate;
   }
   @keyframes pulse-bg { 0%{opacity:.5} 100%{opacity:1} }
 
-  .wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:10px; }
+  .wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:10px; padding-bottom:16px; }
+  /* Fill the iframe height so there's no empty space below content */
+  #dashboard { flex:1; }
 
   /* ── Loading ── */
   #loading { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:50vh; gap:14px; }
@@ -78,163 +80,133 @@
   .panel.orange::before { background:linear-gradient(90deg,transparent,var(--accent3),transparent); }
   .panel > * { position:relative; z-index:1; }
 
-  /* ── Weather backgrounds ── */
-  .wx-bg { position:absolute; inset:0; z-index:0; overflow:hidden; border-radius:12px; }
+  /* ── Weather backgrounds — dramatic motion ── */
+  .wx-bg { position:absolute; inset:0; z-index:0; overflow:hidden; border-radius:11px; }
 
-  /* CLEAR / SUNNY */
+  /* ═══ CLEAR / SUNNY ═══ */
   .wx-clear .wx-bg {
-    background: radial-gradient(ellipse at 70% 20%, rgba(255,209,102,0.18) 0%, transparent 60%),
-                radial-gradient(ellipse at 30% 80%, rgba(255,160,0,0.08) 0%, transparent 50%);
+    background: linear-gradient(135deg, rgba(255,180,0,0.22) 0%, rgba(255,100,0,0.08) 60%, transparent 100%);
+  }
+  .wx-clear .wx-bg::before {
+    content:''; position:absolute;
+    top:-40px; right:-40px; width:160px; height:160px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,220,60,0.55) 0%, rgba(255,150,0,0.25) 40%, transparent 70%);
+    animation: sun-pulse 3.5s ease-in-out infinite;
+    box-shadow: 0 0 60px 20px rgba(255,200,0,0.2);
   }
   .wx-clear .wx-bg::after {
-    content:''; position:absolute; top:-20px; right:-20px;
-    width:110px; height:110px; border-radius:50%;
-    background: radial-gradient(circle, rgba(255,209,102,0.35) 0%, rgba(255,160,0,0.1) 50%, transparent 70%);
+    content:''; position:absolute;
+    top:-60px; right:-60px; width:220px; height:220px; border-radius:50%;
+    background: conic-gradient(from 0deg,
+      transparent 0deg, rgba(255,220,60,0.06) 15deg, transparent 30deg,
+      rgba(255,220,60,0.06) 45deg, transparent 60deg, rgba(255,220,60,0.06) 75deg,
+      transparent 90deg, rgba(255,220,60,0.06) 105deg, transparent 120deg,
+      rgba(255,220,60,0.06) 135deg, transparent 150deg, rgba(255,220,60,0.06) 165deg, transparent 180deg);
+    animation: sun-rays 12s linear infinite;
+  }
+  @keyframes sun-pulse { 0%,100%{transform:scale(1);opacity:.85} 50%{transform:scale(1.18);opacity:1} }
+  @keyframes sun-rays { to{transform:rotate(360deg)} }
+
+  /* ═══ PARTLY CLOUDY ═══ */
+  .wx-partly .wx-bg {
+    background: linear-gradient(135deg, rgba(255,180,0,0.14) 0%, rgba(80,110,160,0.15) 60%, transparent 100%);
+  }
+  .wx-partly .wx-bg::before {
+    content:''; position:absolute;
+    top:-30px; right:-30px; width:120px; height:120px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,220,60,0.3) 0%, transparent 65%);
     animation: sun-pulse 4s ease-in-out infinite;
   }
-  @keyframes sun-pulse {
-    0%,100%{ transform:scale(1); opacity:.8; }
-    50%{ transform:scale(1.12); opacity:1; }
-  }
-
-  /* PARTLY CLOUDY */
-  .wx-partly .wx-bg {
-    background: radial-gradient(ellipse at 60% 15%, rgba(255,209,102,0.12) 0%, transparent 50%),
-                linear-gradient(180deg, rgba(100,120,160,0.08) 0%, transparent 60%);
-  }
-  .wx-partly .wx-bg::before,
   .wx-partly .wx-bg::after {
-    content:''; position:absolute; border-radius:50%;
-    background: rgba(180,200,230,0.06);
-    animation: cloud-drift 8s ease-in-out infinite;
+    content:''; position:absolute;
+    top:30px; left:-30px; width:200px; height:70px; border-radius:50px;
+    background: rgba(200,220,255,0.1);
+    box-shadow: 40px 20px 0 rgba(200,220,255,0.07), 70px 5px 0 rgba(200,220,255,0.05);
+    animation: cloud-drift 9s ease-in-out infinite;
   }
-  .wx-partly .wx-bg::before { width:160px; height:60px; top:15px; left:-10px; border-radius:40px; animation-delay:0s; }
-  .wx-partly .wx-bg::after  { width:100px; height:40px; top:35px; right:10px; border-radius:30px; animation-delay:-3s; }
-  @keyframes cloud-drift {
-    0%,100%{ transform:translateX(0); }
-    50%{ transform:translateX(12px); }
-  }
+  @keyframes cloud-drift { 0%,100%{transform:translateX(0)} 50%{transform:translateX(18px)} }
 
-  /* CLOUDY / OVERCAST */
+  /* ═══ CLOUDY ═══ */
   .wx-cloudy .wx-bg {
-    background: linear-gradient(180deg, rgba(80,90,110,0.2) 0%, rgba(40,50,70,0.1) 100%);
+    background: linear-gradient(180deg, rgba(70,85,115,0.35) 0%, rgba(30,40,60,0.2) 100%);
   }
-  .wx-cloudy .wx-bg::before,
+  .wx-cloudy .wx-bg::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 200px 60px at 20% 30%, rgba(180,200,230,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 150px 50px at 70% 60%, rgba(160,180,210,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 120px 40px at 50% 15%, rgba(200,215,240,0.12) 0%, transparent 70%);
+    animation: cloud-layer 12s ease-in-out infinite alternate;
+  }
   .wx-cloudy .wx-bg::after {
-    content:''; position:absolute; border-radius:40px;
-    background: rgba(150,170,200,0.07);
-    animation: cloud-drift 10s ease-in-out infinite;
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 180px 55px at 80% 50%, rgba(150,170,200,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 220px 65px at 10% 70%, rgba(170,190,220,0.08) 0%, transparent 70%);
+    animation: cloud-layer 15s ease-in-out infinite alternate-reverse;
   }
-  .wx-cloudy .wx-bg::before { width:200px; height:70px; top:10px; left:-20px; animation-delay:0s; }
-  .wx-cloudy .wx-bg::after  { width:150px; height:50px; top:45px; right:-10px; animation-delay:-5s; }
+  @keyframes cloud-layer { 0%{transform:translateX(0)} 100%{transform:translateX(24px)} }
 
-  /* RAIN / DRIZZLE */
+  /* ═══ RAIN ═══ */
   .wx-rain .wx-bg {
-    background: linear-gradient(180deg, rgba(30,50,90,0.25) 0%, rgba(10,20,50,0.15) 100%);
+    background: linear-gradient(180deg, rgba(10,30,80,0.4) 0%, rgba(5,15,40,0.25) 100%);
   }
   .wx-rain .wx-bg::before {
-    content:'';
-    position:absolute; inset:0;
+    content:''; position:absolute; inset:0;
     background-image:
-      repeating-linear-gradient(
-        175deg,
-        transparent 0px, transparent 8px,
-        rgba(0,194,255,0.07) 8px, rgba(0,194,255,0.07) 9px
-      );
-    animation: rain-anim 1.2s linear infinite;
+      repeating-linear-gradient(176deg, transparent 0px, transparent 10px,
+        rgba(100,200,255,0.14) 10px, rgba(100,200,255,0.14) 11.5px),
+      repeating-linear-gradient(176deg, transparent 0px, transparent 16px,
+        rgba(100,200,255,0.08) 16px, rgba(100,200,255,0.08) 17px);
+    animation: rain-fall 0.85s linear infinite;
   }
-  @keyframes rain-anim {
-    0%{ background-position:0 0; }
-    100%{ background-position:-20px 80px; }
+  .wx-rain .wx-bg::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:16px;
+    background: repeating-linear-gradient(90deg,
+      transparent 0px, transparent 18px,
+      rgba(100,200,255,0.18) 18px, rgba(100,200,255,0.18) 20px,
+      transparent 20px, transparent 22px);
+    animation: rain-splash 1.3s ease-in-out infinite;
   }
+  @keyframes rain-fall { 0%{background-position:0 0,0 0} 100%{background-position:-15px 120px,-8px 80px} }
+  @keyframes rain-splash { 0%,100%{opacity:.3;transform:scaleY(1)} 50%{opacity:.9;transform:scaleY(1.6)} }
 
-  /* STORM */
+  /* ═══ STORM ═══ */
   .wx-storm .wx-bg {
-    background: linear-gradient(180deg, rgba(20,10,60,0.35) 0%, rgba(10,5,30,0.2) 100%);
-    animation: storm-flash 6s ease-in-out infinite;
-  }
-  @keyframes storm-flash {
-    0%,90%,100%{ filter:brightness(1); }
-    92%{ filter:brightness(1.4); }
-    94%{ filter:brightness(1); }
-    96%{ filter:brightness(1.5); }
+    background: linear-gradient(180deg, rgba(20,5,70,0.5) 0%, rgba(8,2,30,0.35) 100%);
   }
   .wx-storm .wx-bg::before {
     content:''; position:absolute; inset:0;
-    background-image:
-      repeating-linear-gradient(
-        172deg, transparent 0px, transparent 6px,
-        rgba(123,92,250,0.1) 6px, rgba(123,92,250,0.1) 7px
-      );
-    animation: rain-anim .8s linear infinite;
+    background-image: repeating-linear-gradient(174deg, transparent 0px, transparent 7px,
+      rgba(123,92,250,0.18) 7px, rgba(123,92,250,0.18) 8.5px);
+    animation: rain-fall .6s linear infinite;
+  }
+  .wx-storm .wx-bg::after {
+    content:''; position:absolute; inset:0;
+    animation: lightning 5s ease-in-out infinite;
+  }
+  @keyframes lightning {
+    0%,88%,100%{background:transparent}
+    90%{background:rgba(180,160,255,0.14)}
+    92%{background:transparent}
+    94%{background:rgba(200,180,255,0.2)}
+    96%{background:transparent}
   }
 
-  /* FOG / MIST */
+  /* ═══ FOG ═══ */
   .wx-fog .wx-bg {
-    background: linear-gradient(180deg, rgba(150,160,180,0.12) 0%, transparent 100%);
-    animation: fog-drift 6s ease-in-out infinite alternate;
+    background: linear-gradient(180deg, rgba(180,190,210,0.18) 0%, rgba(100,110,130,0.08) 100%);
   }
-  @keyframes fog-drift {
-    0%{ opacity:.7; } 100%{ opacity:1; }
+  .wx-fog .wx-bg::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 300px 80px at 30% 40%, rgba(210,220,240,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 250px 60px at 75% 65%, rgba(200,215,235,0.09) 0%, transparent 70%);
+    animation: fog-drift 10s ease-in-out infinite alternate;
   }
-  .plbl { font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; font-family:'Orbitron',monospace; }
-  .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,194,255,.4),transparent); animation:scan 4s linear infinite; pointer-events:none; }
-  @keyframes scan { 0%{top:0;opacity:1} 100%{top:100%;opacity:0} }
+  @keyframes fog-drift { 0%{transform:translateX(0)} 100%{transform:translateX(30px)} }
 
-  /* ── Temp ── */
-  .big-temp { font-family:'Orbitron',monospace; font-size:48px; font-weight:900; line-height:1; color:var(--accent); text-shadow:0 0 28px rgba(0,194,255,.5); }
-  .big-temp span { font-size:20px; color:var(--muted); }
-  .cond-row { font-size:12px; color:var(--text); margin-top:7px; display:flex; align-items:center; gap:7px; }
-  .loc-row { font-size:10px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,.05); }
-
-  /* ── Rain ── */
-  .rain-big { font-family:'Orbitron',monospace; font-size:34px; font-weight:700; color:var(--accent3); text-shadow:0 0 18px rgba(255,107,53,.4); }
-  .rain-big span { font-size:16px; color:var(--muted); }
-  .rain-desc { font-size:10px; color:var(--muted); margin-top:3px; }
-  .bar-track { background:rgba(255,255,255,.05); border-radius:4px; height:5px; margin-top:12px; overflow:hidden; }
-  .bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent3),var(--warn)); width:0; transition:width 1.4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 7px rgba(255,107,53,.5); }
-  .bar-lbl { display:flex; justify-content:space-between; font-size:8px; color:var(--muted); margin-top:3px; }
-  .alert-box { display:flex; align-items:center; gap:7px; padding:7px 10px; border-radius:7px; margin-top:9px; font-size:10px; font-weight:500; }
-  .ok   { background:rgba(6,214,160,.1); color:var(--success); border:1px solid rgba(6,214,160,.2); }
-  .warn { background:rgba(255,209,102,.1); color:var(--warn); border:1px solid rgba(255,209,102,.2); }
-  .danger { background:rgba(255,107,53,.15); color:var(--accent3); border:1px solid rgba(255,107,53,.3); animation:aflash 2s ease-in-out infinite; }
-  @keyframes aflash { 0%,100%{opacity:1} 50%{opacity:.6} }
-
-  /* ── 3 Days forecast ── */
-  .days-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-  .day-card {
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:14px 10px; text-align:center;
-    opacity:0; animation:fade-up .5s ease forwards;
-    transition:border-color .2s, transform .2s; cursor:default;
-    position:relative; overflow:hidden;
-  }
-  .day-card:hover { border-color:rgba(0,194,255,.4); transform:translateY(-2px); }
-  .day-card.today { border-color:rgba(0,194,255,.5); background:var(--panel2); }
-  .day-card.today::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(0,194,255,.08) 0%,transparent 70%); }
-  .dn { font-size:9px; font-family:'Orbitron',monospace; letter-spacing:1.5px; color:var(--muted); margin-bottom:7px; }
-  .day-card.today .dn { color:var(--accent); }
-  .di { font-size:22px; margin-bottom:6px; }
-  .dt { font-family:'Orbitron',monospace; font-size:18px; font-weight:700; color:var(--text); }
-  .dr { font-size:9px; color:var(--muted); margin-top:5px; }
-  .rb { height:3px; background:rgba(255,255,255,.05); border-radius:2px; margin-top:6px; overflow:hidden; }
-  .rbf { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--accent2),var(--accent)); width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
-
-  /* ── Stats ── */
-  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-  .sc {
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:14px; opacity:0; animation:fade-up .5s ease forwards;
-  }
-  .sl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-family:'Orbitron',monospace; margin-bottom:8px; }
-  .sv { font-family:'Orbitron',monospace; font-size:20px; font-weight:700; }
-  .su { font-size:10px; color:var(--muted); margin-left:2px; }
-  .cy { color:#00c2ff; text-shadow:0 0 10px rgba(0,194,255,.4); }
-  .pu { color:#7b5cfa; text-shadow:0 0 10px rgba(123,92,250,.4); }
-  .or { color:#ff6b35; text-shadow:0 0 10px rgba(255,107,53,.4); }
-  .go { color:#ffd166; text-shadow:0 0 10px rgba(255,209,102,.4); }
-
-  /* ── Anim delays ── */
+    /* ── Anim delays ── */
   .d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}
   .d4{animation-delay:.2s}.d5{animation-delay:.25s}.d6{animation-delay:.3s}
   .d7{animation-delay:.35s}.d8{animation-delay:.4s}.d9{animation-delay:.45s}
@@ -244,6 +216,13 @@
   @keyframes fade-up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
   /* ── Responsive ── */
+  .temp-range { display:flex; gap:14px; margin-top:8px; }
+  .temp-range > div { display:flex; flex-direction:column; }
+  .t-lbl { font-size:8px; letter-spacing:1.5px; color:var(--muted); font-family:'Orbitron',monospace; margin-bottom:2px; }
+  .t-max { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; color:#ff6b35; }
+  .t-min { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; color:#00c2ff; }
+  .t-now { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; color:#e8eaf0; }
+
   @media (max-width:520px) {
     body { padding:10px; }
     .hero { grid-template-columns:1fr; }
@@ -284,7 +263,17 @@
       <div class="scan"></div>
       <div class="plbl">Temperatura actual</div>
       <div class="big-temp"><span id="cur-temp">--</span><span>°C</span></div>
+      <div class="minmax-row">
+        <span class="mm-lbl">MÍN</span><span class="mm-val" id="day-min">--°</span>
+        <span class="mm-sep">·</span>
+        <span class="mm-lbl">MÁX</span><span class="mm-val mm-max" id="day-max">--°</span>
+      </div>
       <div class="cond-row"><span id="cond-icon">☁️</span><span id="cond-txt">...</span></div>
+      <div class="temp-range">
+        <div><span class="t-lbl">MÁX HOY</span><span class="t-max" id="t-max">--°</span></div>
+        <div><span class="t-lbl">MÍN HOY</span><span class="t-min" id="t-min">--°</span></div>
+        <div><span class="t-lbl">ACTUAL</span><span style="color:#e8eaf0" id="t-cur-lbl">--°</span></div>
+      </div>
       <div class="loc-row">📍 CDMX · 19.43°N 99.13°O · 2,240 msnm</div>
     </div>
     <div class="panel orange d3" id="panel-rain">
@@ -368,7 +357,7 @@ async function fetchWeather(force) {
     var url = 'https://api.open-meteo.com/v1/forecast'
       +'?latitude=19.4326&longitude=-99.1332'
       +'&current=temperature_2m,weathercode,precipitation_probability'
-      +'&daily=temperature_2m_max,precipitation_probability_max,weathercode'
+      +'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode'
       +'&timezone=America%2FMexico_City&forecast_days=7';
     var res = await fetch(url,{cache:'no-store'});
     if (!res.ok) throw 0;
@@ -378,7 +367,9 @@ async function fetchWeather(force) {
       curCode : j.current.weathercode,
       curRain : j.current.precipitation_probability||0,
       daily   : j.daily.time.slice(0,7).map(function(t,i){
-        return { date:t, max:Math.round(j.daily.temperature_2m_max[i]),
+        return { date:t,
+                 max:Math.round(j.daily.temperature_2m_max[i]),
+                 min:Math.round(j.daily.temperature_2m_min[i]),
                  rain:j.daily.precipitation_probability_max[i],
                  code:j.daily.weathercode[i] };
       })
@@ -410,6 +401,20 @@ function render(data, fromCache) {
   var target = data.curTemp, count = 0, el = document.getElementById('cur-temp');
   var step = Math.max(1, Math.floor(target/18));
   var t = setInterval(function(){ count=Math.min(count+step,target); el.textContent=count; if(count>=target)clearInterval(t); },55);
+
+  /* min/max for today */
+  var today0 = data.daily[0];
+  var tmx = document.getElementById('t-max');
+  var tmn = document.getElementById('t-min');
+  var tcl = document.getElementById('t-cur-lbl');
+  if(tmx) tmx.textContent = (today0 ? today0.max : '--') + '°';
+  if(tmn) tmn.textContent = (today0 ? today0.min : '--') + '°';
+  if(tcl) tcl.textContent = data.curTemp + '°';
+
+  /* min/max from today's data */
+  var todayData = data.daily[todayIdx] || data.daily[0];
+  document.getElementById('day-min').textContent = todayData.min+'°';
+  document.getElementById('day-max').textContent = todayData.max+'°';
 
   /* condition */
   var info = wmoInfo(data.curCode);
