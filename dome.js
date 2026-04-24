@@ -60,8 +60,7 @@
   ];
 
   var isMobile = window.innerWidth <= 640;
-  /* Móvil: R=380 con TW=72 → tile angular ≈8.6°, sep mínima de 11° → sin colisión */
-  var SEG   = isMobile ? 16 : 24;
+  var SEG   = isMobile ? 22 : 24;
   var R     = isMobile ? 380 : 560;
   var TW    = isMobile ? 72  : 82;
   var TH    = isMobile ? 72  : 82;
@@ -95,12 +94,11 @@
   var tileData = [];
   var ii = 0;
 
-  /* Móvil: 3 filas separadas 12° (mínimo sin colisión para R=380,TW=72,tile=9.6°)
-     Desktop: 5 filas separadas 10° (mínimo para R=560,TW=82,tile=7.6°) */
-  var mobileRows0  = [-12, 0, 12];
-  var mobileRows1  = [-6,  6, 18];
-  var desktopRows0 = [-20,-10, 0, 10, 20];
-  var desktopRows1 = [-15, -5, 5, 15, 25];
+  /* Desktop: 8° = mínimo exacto (tile=7.6°+0.4° buffer). Mobile: 10° (tile=9.6°+0.4°) */
+  var mobileRows0  = [-10, 0, 10];
+  var mobileRows1  = [-5,  5, 15];
+  var desktopRows0 = [-16, -8, 0,  8, 16];
+  var desktopRows1 = [-12, -4, 4, 12, 20];
 
   for (var c = 0; c < SEG; c++) {
     var rows = isMobile
