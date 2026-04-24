@@ -251,3 +251,13 @@
   .w-temp { font-size: 16px; }
   .w-cond { display: none; }
 }
+
+/* ── Móvil: sheet del dashboard a pantalla casi completa ── */
+@media (max-width: 639px) {
+  #dash-sheet {
+    height: 96vh;
+    max-height: none;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+}
