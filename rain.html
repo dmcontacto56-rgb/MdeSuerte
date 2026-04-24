@@ -54,25 +54,45 @@
     }
     .ctrl .val { font-size: 11px; color: var(--text); min-width: 26px; text-align: right; }
 
-    /* ── Mobile: HUD compacto, posicionado abajo ── */
+    /* ── Mobile: canvas cuadrado tipo post Instagram ── */
     @media (max-width: 640px) {
-      #hud {
-        top: auto;
-        bottom: 100px;
-        left: 12px;
-        padding: 8px 10px;
-        gap: 6px;
-        border-radius: 10px;
-        background: rgba(0,0,0,0.55);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transform: scale(0.88);
-        transform-origin: bottom left;
+      body { overflow: hidden; }
+
+      canvas {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 100vw !important;
+        height: 100vw !important;  /* cuadrado 1:1 */
       }
-      .ctrl label { font-size: 8px; width: 52px; }
-      .ctrl input[type=range] { width: 56px; }
-      .ctrl .val { font-size: 9px; min-width: 18px; }
-      #weather-widget { bottom: 20px; right: 12px; }
+
+      /* HUD: mini, arriba derecha */
+      #hud {
+        top: 14px;
+        left: auto;
+        right: 12px;
+        bottom: auto;
+        padding: 7px 9px;
+        gap: 5px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transform: none;
+      }
+      .ctrl label { font-size: 7px; width: 46px; letter-spacing: 0.06em; }
+      .ctrl input[type=range] { width: 52px; }
+      .ctrl .val { font-size: 8px; min-width: 16px; }
+
+      /* Widget del clima: debajo del HUD, mismo lado derecho */
+      #weather-widget {
+        top: auto;
+        bottom: auto;
+        right: 12px;
+        /* se posiciona dinámicamente via JS */
+        position: fixed;
+      }
     }
   </style>
 </head>
@@ -245,6 +265,56 @@ new p5(function(p) {
 </script>
 
 <script src="weather-widget.js"></script>
+<script>
+/* ── Móvil: posicionar widget debajo del HUD y canvas cuadrado ── */
+(function() {
+  function isMobile() { return window.innerWidth <= 640; }
+
+  function positionWidget() {
+    if (!isMobile()) return;
+    var hud = document.getElementById('hud');
+    var widget = document.getElementById('weather-widget');
+    if (!hud || !widget) return;
+    var hudRect = hud.getBoundingClientRect();
+    widget.style.top    = (hudRect.bottom + 10) + 'px';
+    widget.style.bottom = 'auto';
+    widget.style.right  = '12px';
+    widget.style.left   = 'auto';
+  }
+
+  function squareCanvas() {
+    if (!isMobile()) return;
+    // p5 crea el canvas — esperamos a que exista
+    var canvas = document.querySelector('canvas');
+    if (!canvas) return;
+    var size = window.innerWidth;
+    canvas.style.width  = size + 'px';
+    canvas.style.height = size + 'px';
+    canvas.style.position = 'fixed';
+    canvas.style.top  = '50%';
+    canvas.style.left = '50%';
+    canvas.style.transform = 'translate(-50%, -50%)';
+  }
+
+  // Esperar que p5 cargue el canvas
+  var attempts = 0;
+  var interval = setInterval(function() {
+    squareCanvas();
+    positionWidget();
+    attempts++;
+    if (attempts > 20) clearInterval(interval);
+    if (document.querySelector('canvas') && document.getElementById('hud')) {
+      squareCanvas();
+      positionWidget();
+      clearInterval(interval);
+    }
+  }, 150);
+
+  window.addEventListener('resize', function() {
+    squareCanvas();
+    positionWidget();
+  });
+})();
+</script>
 </body>
 </html>
-
