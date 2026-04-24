@@ -141,8 +141,8 @@
 <div id="hud">
   <div class="ctrl">
     <label>Gotas</label>
-    <input type="range" id="r-num" min="50" max="1200" value="500" step="10">
-    <span class="val" id="v-num">500</span>
+    <input type="range" id="r-num" min="50" max="1200" value="50" step="10">
+    <span class="val" id="v-num">50</span>
   </div>
   <div class="ctrl">
     <label>Velocidad</label>
@@ -273,12 +273,13 @@ new p5(function(p) {
   function isMobile() { return window.innerWidth <= 640; }
 
   function positionWidget() {
-    if (!isMobile()) return;
     var hud = document.getElementById('hud');
     var widget = document.getElementById('weather-widget');
     if (!hud || !widget) return;
+    /* Position widget below HUD, same left edge, on all screen sizes */
     var hudRect = hud.getBoundingClientRect();
-    widget.style.top    = (hudRect.bottom + 10) + 'px';
+    var containerTop = hud.offsetParent ? hud.offsetParent.getBoundingClientRect().top : 0;
+    widget.style.top    = (hud.offsetTop + hud.offsetHeight + 10) + 'px';
     widget.style.bottom = 'auto';
     widget.style.left   = '12px';
     widget.style.right  = 'auto';
@@ -299,18 +300,19 @@ new p5(function(p) {
   }
 
   // Esperar que p5 cargue el canvas
+  /* Run after p5 loads canvas */
   var attempts = 0;
   var interval = setInterval(function() {
     squareCanvas();
     positionWidget();
     attempts++;
-    if (attempts > 20) clearInterval(interval);
-    if (document.querySelector('canvas') && document.getElementById('hud')) {
+    if (attempts > 30) clearInterval(interval);
+    if (document.querySelector('canvas') && hud) {
       squareCanvas();
       positionWidget();
       clearInterval(interval);
     }
-  }, 150);
+  }, 120);
 
   window.addEventListener('resize', function() {
     squareCanvas();
