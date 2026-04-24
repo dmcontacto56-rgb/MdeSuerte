@@ -636,6 +636,8 @@
       position:absolute;inset:0;
       background:radial-gradient(ellipse at 50% 50%,transparent 30%,#080808 75%);
       pointer-events:none;z-index:5;
+      opacity:0;
+      transition:opacity .35s ease;
     }
     .dg-fade-top{
       position:absolute;top:0;left:0;right:0;height:130px;
