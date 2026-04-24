@@ -976,11 +976,11 @@
         transform: none !important;
         transform-origin: top left;
       }
-      /* Rain module en móvil: formato cuadrado 1:1 (post Instagram) */
+      /* Rain module en móvil: relación 4:5 tipo post Instagram vertical */
       #rain-module {
-        height: 100vw !important;
-        max-height: 100vw !important;
-        min-height: 100vw !important;
+        height: 125vw !important;
+        max-height: 125vw !important;
+        min-height: 125vw !important;
       }
       /* Globe banner */
       #globe-banner,
