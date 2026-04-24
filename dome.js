@@ -247,6 +247,7 @@
     lb.style.minHeight  = "0";
     inner.appendChild(lb);
     scrim.classList.add("on");
+    ov.style.opacity = "1";
     tile.style.visibility = "hidden";
     lb._tile = tile;
     // Load image, then size to natural dimensions fitted to viewport
@@ -273,6 +274,7 @@
     if (performance.now() - lbAt < 300) return;
     lb.style.opacity = "0";
     scrim.classList.remove("on");
+    ov.style.opacity = "0";
     if (lb._tile) lb._tile.style.visibility = "";
     var _lb = lb; lb = null; lbOpen = false;
     setTimeout(function(){ if(_lb) _lb.remove(); }, 300);
@@ -295,3 +297,4 @@
   });
 
 })();
+
