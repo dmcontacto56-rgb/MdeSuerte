@@ -34,8 +34,8 @@
     }
     #hud {
       position: absolute;
-      top: 60px;  /* below the anim-label text */
-      left: 24px;
+      top: 52px;
+      left: 20px;
       display: inline-flex; flex-direction: column; gap: 10px;
       background: var(--panel-bg); border-radius: 14px;
       padding: 14px 16px;
@@ -78,10 +78,12 @@
         height: 100vw !important;
       }
 
-      /* HUD: mini, arriba IZQUIERDA */
+      /* HUD: compensa el scale(vw/1080) del iframe en móvil.
+         anim-label en padre = top:32px alto:14px → bottom=46px.
+         Dentro del iframe escalado a ~0.36x, necesita top≈140px */
       #hud {
-        top: 14px;
-        left: 12px;
+        top: 145px;
+        left: 14px;
         right: auto;
         bottom: auto;
         padding: 7px 9px;
