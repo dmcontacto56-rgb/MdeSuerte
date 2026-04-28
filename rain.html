@@ -5,130 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rain — M de Suerte</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <link rel="stylesheet" href="weather-widget.css"/>
-  <style>
-    /* In rain.html: widget is absolute (not fixed) so it stays inside the iframe */
-    #weather-widget {
-      position: absolute !important;
-      bottom: auto !important;
-      right: auto !important;
-    }
-    #dash-backdrop, #dash-overlay { position: fixed; }
-  </style>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #000;
-      --panel-bg: rgba(255,255,255,0.04);
-      --text: rgba(255,255,255,0.85);
-      --text-dim: rgba(255,255,255,0.35);
-      --accent: #00ffe0;
-    }
+    :root { --bg: #000; --panel-bg: rgba(255,255,255,0.04); --text: rgba(255,255,255,0.85); --text-dim: rgba(255,255,255,0.35); --accent: #00ffe0; }
     body { background: var(--bg); overflow: hidden; cursor: none; font-family: 'Courier New', monospace; }
     canvas { display: block; }
-    #cursor {
-      position: fixed; width: 4px; height: 4px;
-      background: #fff; border-radius: 50%;
-      pointer-events: none; z-index: 9999;
-      transform: translate(-50%, -50%);
-    }
-    #hud {
-      position: absolute;
-      top: 52px;
-      left: 20px;
-      display: inline-flex; flex-direction: column; gap: 10px;
-      background: var(--panel-bg); border-radius: 14px;
-      padding: 14px 16px;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      z-index: 10;
-    }
+    #cursor { position: fixed; width: 5px; height: 5px; background: #00ffe0; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); box-shadow: 0 0 8px #00ffe0; }
+    #hud { position: absolute; top: 52px; left: 20px; display: inline-flex; flex-direction: column; gap: 10px; background: var(--panel-bg); border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10; }
     .ctrl { display: flex; align-items: center; gap: 8px; }
-    .ctrl label {
-      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--text-dim); white-space: nowrap; width: 68px;
-    }
-    .ctrl input[type=range] {
-      -webkit-appearance: none; appearance: none;
-      width: 80px; height: 2px;
-      background: rgba(255,255,255,0.15); border-radius: 2px;
-      outline: none; cursor: pointer;
-    }
-    .ctrl input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 12px; height: 12px;
-      border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 8px var(--accent); cursor: pointer;
-    }
-    .ctrl input[type=range]::-moz-range-thumb {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--accent); box-shadow: 0 0 8px var(--accent);
-      border: none; cursor: pointer;
-    }
+    .ctrl label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; width: 68px; }
+    .ctrl input[type=range] { -webkit-appearance: none; appearance: none; width: 80px; height: 2px; background: rgba(255,255,255,0.15); border-radius: 2px; outline: none; cursor: pointer; }
+    .ctrl input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); cursor: pointer; }
     .ctrl .val { font-size: 11px; color: var(--text); min-width: 26px; text-align: right; }
-
-    /* ── Mobile: canvas cuadrado tipo post Instagram ── */
     @media (max-width: 640px) {
       body { overflow: hidden; }
-
-      canvas {
-        position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: 100vw !important;
-        height: 100vw !important;
-      }
-
-      /* HUD: compensa el scale(vw/1080) del iframe en móvil.
-         anim-label en padre = top:32px alto:14px → bottom=46px.
-         Dentro del iframe escalado a ~0.36x, necesita top≈140px */
-      #hud {
-        top: 145px;
-        left: 14px;
-        right: auto;
-        bottom: auto;
-        padding: 7px 9px;
-        gap: 5px;
-        border-radius: 10px;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transform: none;
-      }
-      .ctrl label { font-size: 7px; width: 46px; letter-spacing: 0.06em; }
+      canvas { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 100vw !important; height: 100vw !important; }
+      #hud { top: 145px; left: 14px; padding: 7px 9px; gap: 5px; border-radius: 10px; background: rgba(0,0,0,0.65); }
+      .ctrl label { font-size: 7px; width: 46px; }
       .ctrl input[type=range] { width: 52px; }
       .ctrl .val { font-size: 8px; min-width: 16px; }
     }
   </style>
+  <style>
+    /* ══ WIDGET BUTTON ══ */
+    #weather-widget {
+      position: absolute; z-index: 100;
+      left: 20px; top: 200px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 18px 12px 13px;
+      background: rgba(3, 10, 20, 0.9);
+      border: 1.5px solid rgba(0,255,224,0.55);
+      border-radius: 50px;
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      cursor: pointer;
+      transition: border-color 0.22s, box-shadow 0.22s, transform 0.15s, background 0.22s;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;
+      animation: widget-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes widget-pulse {
+      0%,100% { box-shadow: 0 6px 30px rgba(0,0,0,0.75), 0 0 0 0 rgba(0,255,224,0), 0 0 10px rgba(0,255,224,0.12); border-color: rgba(0,255,224,0.45); }
+      38%     { box-shadow: 0 6px 34px rgba(0,0,0,0.8),  0 0 0 9px rgba(0,255,224,0.11), 0 0 32px rgba(0,255,224,0.3); border-color: rgba(0,255,224,0.95); }
+      68%     { box-shadow: 0 6px 36px rgba(0,0,0,0.8),  0 0 0 17px rgba(0,255,224,0.03), 0 0 22px rgba(0,255,224,0.18); border-color: rgba(0,255,224,0.6); }
+    }
+    #weather-widget:hover { animation: none !important; border-color: #00ffe0 !important; background: rgba(0, 22, 18, 0.94); box-shadow: 0 6px 44px rgba(0,0,0,0.85), 0 0 44px rgba(0,255,224,0.38) !important; transform: translateY(-2px) scale(1.025); }
+    #weather-widget:active { transform: scale(0.93); }
+    .w-tap-hint { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,255,224,0.85); background: rgba(0,20,16,0.8); border: 1px solid rgba(0,255,224,0.28); border-radius: 10px; padding: 2px 10px; pointer-events: none; white-space: nowrap; animation: hint-blink 2.4s ease-in-out infinite; }
+    @keyframes hint-blink { 0%,100%{opacity:.85} 50%{opacity:.18} }
+    .w-icon { width: 36px; height: 36px; position: relative; flex-shrink: 0; }
+    .w-icon svg { width: 100%; height: 100%; }
+    .w-icon .drop { position: absolute; width: 2px; border-radius: 2px; background: #00ffe0; opacity: 0.85; animation: wdrop-fall linear infinite; box-shadow: 0 0 5px rgba(0,255,224,0.7); }
+    .w-icon .drop:nth-child(2) { left: 10px; height: 6px; animation-duration: 0.85s; animation-delay: 0s; }
+    .w-icon .drop:nth-child(3) { left: 17px; height: 8px; animation-duration: 1.05s; animation-delay: 0.22s; }
+    .w-icon .drop:nth-child(4) { left: 24px; height: 6px; animation-duration: 0.9s; animation-delay: 0.44s; }
+    @keyframes wdrop-fall { 0%{top:21px;opacity:.9} 100%{top:37px;opacity:0} }
+    .w-info { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
+    .w-temp { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.5px; text-shadow: 0 0 14px rgba(255,255,255,0.3); }
+    .w-cond { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,255,224,0.55); }
+    .w-arrow { width: 24px; height: 24px; border: 1.5px solid rgba(0,255,224,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 2px; flex-shrink: 0; transition: background 0.22s, border-color 0.22s; animation: arrow-bounce 2.4s ease-in-out infinite; }
+    @keyframes arrow-bounce { 0%,100%{transform:scale(1)} 38%{transform:scale(1.25); box-shadow:0 0 14px rgba(0,255,224,0.55)} }
+    #weather-widget:hover .w-arrow { background: rgba(0,255,224,0.22); border-color: #00ffe0; animation: none; box-shadow: 0 0 18px rgba(0,255,224,0.65); }
+    .w-arrow svg { width: 11px; height: 11px; fill: none; stroke: #00ffe0; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(0,255,224,0.9)); }
+    .w-badge { position: absolute; top: -9px; right: -9px; background: linear-gradient(135deg,#ff6b35,#ff3200); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.25); pointer-events: none; box-shadow: 0 0 16px rgba(255,80,0,0.65); animation: badge-glow 2.4s ease-in-out infinite; }
+    @keyframes badge-glow { 0%,100%{box-shadow:0 0 10px rgba(255,80,0,0.5)} 50%{box-shadow:0 0 24px rgba(255,80,0,0.85)} }
+    @media (max-width: 640px) {
+      #weather-widget { padding: 8px 13px 8px 9px; gap: 7px; }
+      .w-temp { font-size: 14px; }
+      .w-cond { display: none; }
+      .w-badge { font-size: 8px; top: -5px; right: -5px; }
+      .w-tap-hint { display: none; }
+    }
+
+    /* ══ BACKDROP ══ */
+    #dash-backdrop { position: fixed; inset: 0; z-index: 199; background: rgba(0,0,0,0); pointer-events: none; transition: background 0.4s ease; }
+    #dash-backdrop.open { background: rgba(0,0,0,0.72); pointer-events: all; }
+
+    /* ══ DASHBOARD OVERLAY ══ */
+    #dash-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; }
+    #dash-sheet { width: 100%; height: 90vh; background: #080b12; border-top-left-radius: 22px; border-top-right-radius: 22px; overflow: hidden; transform: translateY(112%); transition: transform 0.52s cubic-bezier(0.32,0.72,0,1); box-shadow: 0 -10px 60px rgba(0,0,0,0.92), 0 -1px 0 rgba(0,255,224,0.25); display: flex; flex-direction: column; pointer-events: none; }
+    #dash-overlay.open { pointer-events: all; }
+    #dash-overlay.open #dash-sheet { transform: translateY(0); pointer-events: all; }
+    .sheet-handle { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 12px; flex-shrink: 0; border-bottom: 1px solid rgba(0,255,224,0.1); background: #080b12; }
+    .handle-bar { width: 38px; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.2); position: absolute; left: 50%; transform: translateX(-50%); top: 8px; }
+    .sheet-title { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #00ffe0; }
+    .sheet-close { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; -webkit-tap-highlight-color: transparent; }
+    .sheet-close:hover { background: rgba(0,255,224,0.14); color: #00ffe0; border-color: rgba(0,255,224,0.5); }
+    #dash-frame { flex: 1; width: 100%; border: none; display: block; }
+    @media (min-width: 640px) {
+      #dash-overlay { align-items: stretch; justify-content: flex-end; }
+      #dash-sheet { width: min(700px, 62vw); height: 100%; border-radius: 0; border-left: 1px solid rgba(0,255,224,0.18); transform: translateX(112%); transition: transform 0.52s cubic-bezier(0.32,0.72,0,1); box-shadow: -10px 0 60px rgba(0,0,0,0.88); overflow-y: auto; }
+      #dash-overlay.open #dash-sheet { transform: translateX(0); }
+      .handle-bar { display: none; }
+    }
+    @media (max-width: 640px) {
+      #dash-sheet { height: 96vh; border-top-left-radius: 18px; border-top-right-radius: 18px; }
+    }
+  </style>
 </head>
 <body>
-
 <div id="cursor"></div>
 
 <div id="weather-widget" role="button" aria-label="Ver dashboard del clima" tabindex="0">
+  <div class="w-tap-hint">↑ Ver clima</div>
   <div class="w-icon">
     <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 22c0-4.4 3.6-8 8-8 .5 0 1 .05 1.5.13A5.5 5.5 0 0 1 30 17.5c0 .17-.01.34-.02.5H30a4 4 0 0 1 0 8H10a4 4 0 0 1 0-8z"
-            fill="rgba(0,255,224,0.18)" stroke="rgba(0,255,224,0.6)" stroke-width="1.2"/>
+      <path d="M10 22c0-4.4 3.6-8 8-8 .5 0 1 .05 1.5.13A5.5 5.5 0 0 1 30 17.5c0 .17-.01.34-.02.5H30a4 4 0 0 1 0 8H10a4 4 0 0 1 0-8z" fill="rgba(0,255,224,0.15)" stroke="rgba(0,255,224,0.75)" stroke-width="1.3"/>
     </svg>
-    <div class="drop"></div>
-    <div class="drop"></div>
-    <div class="drop"></div>
+    <div class="drop"></div><div class="drop"></div><div class="drop"></div>
   </div>
   <div class="w-info">
-    <div class="w-temp">19°C</div>
-    <div class="w-cond">Nublado · 28% lluvia</div>
+    <div class="w-temp" id="w-temp-val">--°C</div>
+    <div class="w-cond" id="w-cond-val">Cargando...</div>
   </div>
   <div class="w-arrow">
-    <svg viewBox="0 0 10 10">
-      <polyline points="2,8 5,5 8,8"/>
-      <line x1="5" y1="5" x2="5" y2="1"/>
-    </svg>
+    <svg viewBox="0 0 10 10"><polyline points="2,8 5,5 8,8"/><line x1="5" y1="5" x2="5" y2="1"/></svg>
   </div>
-  <div class="w-badge">28%</div>
+  <div class="w-badge" id="w-badge-val">--%</div>
 </div>
 
 <div id="dash-backdrop"></div>
-
 <div id="dash-overlay" role="dialog" aria-modal="true" aria-label="Dashboard del clima">
   <div id="dash-sheet">
     <div class="sheet-handle">
@@ -141,185 +135,93 @@
 </div>
 
 <div id="hud">
-  <div class="ctrl">
-    <label>Gotas</label>
-    <input type="range" id="r-num" min="50" max="1200" value="50" step="10">
-    <span class="val" id="v-num">50</span>
-  </div>
-  <div class="ctrl">
-    <label>Velocidad</label>
-    <input type="range" id="r-spd" min="1" max="10" value="4" step="0.5">
-    <span class="val" id="v-spd">4</span>
-  </div>
-  <div class="ctrl">
-    <label>Colores</label>
-    <input type="range" id="r-col" min="0" max="100" value="100">
-    <span class="val" id="v-col">100</span>
-  </div>
-  <div class="ctrl">
-    <label>Repulsión</label>
-    <input type="range" id="r-rep" min="0" max="150" value="50">
-    <span class="val" id="v-rep">50</span>
-  </div>
+  <div class="ctrl"><label>Gotas</label><input type="range" id="r-num" min="50" max="1200" value="50" step="10"><span class="val" id="v-num">50</span></div>
+  <div class="ctrl"><label>Velocidad</label><input type="range" id="r-spd" min="1" max="10" value="4" step="0.5"><span class="val" id="v-spd">4</span></div>
+  <div class="ctrl"><label>Colores</label><input type="range" id="r-col" min="0" max="100" value="100"><span class="val" id="v-col">100</span></div>
+  <div class="ctrl"><label>Repulsión</label><input type="range" id="r-rep" min="0" max="150" value="50"><span class="val" id="v-rep">50</span></div>
 </div>
 
 <script>
+/* Cursor */
 const cursor = document.getElementById('cursor');
 let mx = -999, my = -999;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx + 'px';
-  cursor.style.top  = my + 'px';
-});
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
 
+/* Sliders */
 function getParams() {
-  return {
-    num:      +document.getElementById('r-num').value,
-    speedMul: +document.getElementById('r-spd').value,
-    colShift: +document.getElementById('r-col').value,
-    mouseR:   +document.getElementById('r-rep').value,
-  };
+  return { num:+document.getElementById('r-num').value, speedMul:+document.getElementById('r-spd').value, colShift:+document.getElementById('r-col').value, mouseR:+document.getElementById('r-rep').value };
 }
-
-[['num','v-num'],['spd','v-spd'],['col','v-col'],['rep','v-rep']].forEach(([k, vId]) => {
-  const inp = document.getElementById('r-' + k);
-  const out = document.getElementById(vId);
-  inp.addEventListener('input', () => { out.textContent = inp.value; });
-});
-
-new p5(function(p) {
-  let drops = [];
-
-  function randomColor(colShift) {
-    const t = colShift / 100;
-    return p.color(
-      p.lerp(255, p.random(255), t),
-      p.lerp(255, p.random(255), t),
-      p.lerp(255, p.random(255), t)
-    );
-  }
-
-  class Drop {
-    constructor() { this.init(); }
-    init() {
-      const { speedMul, colShift } = getParams();
-      this.x = p.random(p.width);
-      this.y = p.random(-300, 0);
-      this.speed = p.random(1, 4) * (speedMul / 2);
-      this.c = randomColor(colShift);
-      this.eX = 0; this.eY = 0;
-      this.endPos = p.height - p.random(300);
-      this.done = false; this.vx = 0; this.vy = 0;
-    }
-    update() {
-      const { mouseR } = getParams();
-      if (this.done) {
-        this.eX += this.speed * 0.2;
-        this.eY += this.speed * 0.5;
-        if (this.eX > 50) this.init();
-        return;
-      }
-      if (mouseR > 0) {
-        const dx = this.x - mx, dy = this.y - my;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < mouseR && dist > 0) {
-          const force = (mouseR - dist) / mouseR;
-          const angle = Math.atan2(dy, dx);
-          this.vx += Math.cos(angle) * force * 4;
-          this.vy += Math.sin(angle) * force * 4;
-        }
-      }
-      this.vx *= 0.85; this.vy *= 0.85;
-      this.x += this.vx; this.y += this.speed + this.vy;
-      if (this.x < 0) { this.x = 0; this.vx *= -0.5; }
-      if (this.x > p.width) { this.x = p.width; this.vx *= -0.5; }
-      if (this.y >= this.endPos) { this.y = this.endPos; this.done = true; }
-    }
-    draw() {
-      if (!this.done) {
-        p.fill(this.c); p.noStroke();
-        p.rect(this.x, this.y, 2, 15);
-      } else {
-        const fade = p.map(this.eX, 0, 50, 255, 0);
-        p.stroke(p.red(this.c), p.green(this.c), p.blue(this.c), fade);
-        p.strokeWeight(0.8); p.noFill();
-        p.ellipse(this.x, this.endPos, this.eX * 2, this.eY * 0.35);
-      }
-    }
-  }
-
-  p.setup = function() {
-    p.createCanvas(window.innerWidth, window.innerHeight);
-    p.noSmooth();
-    const { num } = getParams();
-    for (let i = 0; i < num; i++) drops.push(new Drop());
-  };
-
-  p.draw = function() {
-    const { num } = getParams();
-    while (drops.length < num) drops.push(new Drop());
-    while (drops.length > num) drops.pop();
-    p.fill(0, 70); p.noStroke();
-    p.rect(0, 0, p.width, p.height);
-    drops.forEach(d => { d.update(); d.draw(); });
-  };
-
-  p.windowResized = function() { p.resizeCanvas(window.innerWidth, window.innerHeight); };
+[['num','v-num'],['spd','v-spd'],['col','v-col'],['rep','v-rep']].forEach(([k,vId])=>{
+  const inp=document.getElementById('r-'+k), out=document.getElementById(vId);
+  inp.addEventListener('input',()=>{ out.textContent=inp.value; });
 });
 </script>
 
-<script src="weather-widget.js"></script>
 <script>
-/* ── Móvil: posicionar widget debajo del HUD izquierda y canvas cuadrado ── */
-(function() {
-  function isMobile() { return window.innerWidth <= 640; }
-
-  function positionWidget() {
-    var hud = document.getElementById('hud');
-    var widget = document.getElementById('weather-widget');
-    if (!hud || !widget) return;
-    /* Position widget below HUD, same left edge, on all screen sizes */
-    var hudRect = hud.getBoundingClientRect();
-    var containerTop = hud.offsetParent ? hud.offsetParent.getBoundingClientRect().top : 0;
-    widget.style.top    = (hud.offsetTop + hud.offsetHeight + 10) + 'px';
-    widget.style.bottom = 'auto';
-    widget.style.left   = '12px';
-    widget.style.right  = 'auto';
+/* p5 Rain */
+new p5(function(p) {
+  let drops = [];
+  function randomColor(s) { const t=s/100; return p.color(p.lerp(255,p.random(255),t),p.lerp(255,p.random(255),t),p.lerp(255,p.random(255),t)); }
+  class Drop {
+    constructor(){this.init();}
+    init(){ const{speedMul,colShift}=getParams(); this.x=p.random(p.width); this.y=p.random(-300,0); this.speed=p.random(1,4)*(speedMul/2); this.c=randomColor(colShift); this.eX=0;this.eY=0; this.endPos=p.height-p.random(300); this.done=false; this.vx=0;this.vy=0; }
+    update(){ const{mouseR}=getParams(); if(this.done){this.eX+=this.speed*0.2;this.eY+=this.speed*0.5; if(this.eX>50)this.init(); return;} if(mouseR>0){const dx=this.x-mx,dy=this.y-my,dist=Math.sqrt(dx*dx+dy*dy); if(dist<mouseR&&dist>0){const force=(mouseR-dist)/mouseR,angle=Math.atan2(dy,dx); this.vx+=Math.cos(angle)*force*4; this.vy+=Math.sin(angle)*force*4;}} this.vx*=0.85;this.vy*=0.85; this.x+=this.vx;this.y+=this.speed+this.vy; if(this.x<0){this.x=0;this.vx*=-0.5;} if(this.x>p.width){this.x=p.width;this.vx*=-0.5;} if(this.y>=this.endPos){this.y=this.endPos;this.done=true;} }
+    draw(){ if(!this.done){p.fill(this.c);p.noStroke();p.rect(this.x,this.y,2,15);}else{const fade=p.map(this.eX,0,50,255,0);p.stroke(p.red(this.c),p.green(this.c),p.blue(this.c),fade);p.strokeWeight(0.8);p.noFill();p.ellipse(this.x,this.endPos,this.eX*2,this.eY*0.35);} }
   }
+  p.setup=function(){p.createCanvas(window.innerWidth,window.innerHeight);p.noSmooth();const{num}=getParams();for(let i=0;i<num;i++)drops.push(new Drop());};
+  p.draw=function(){const{num}=getParams();while(drops.length<num)drops.push(new Drop());while(drops.length>num)drops.pop();p.fill(0,70);p.noStroke();p.rect(0,0,p.width,p.height);drops.forEach(d=>{d.update();d.draw();});};
+  p.windowResized=function(){p.resizeCanvas(window.innerWidth,window.innerHeight);};
+});
+</script>
 
-  function squareCanvas() {
-    if (!isMobile()) return;
-    // p5 crea el canvas — esperamos a que exista
-    var canvas = document.querySelector('canvas');
-    if (!canvas) return;
-    var size = window.innerWidth;
-    canvas.style.width  = size + 'px';
-    canvas.style.height = size + 'px';
-    canvas.style.position = 'fixed';
-    canvas.style.top  = '50%';
-    canvas.style.left = '50%';
-    canvas.style.transform = 'translate(-50%, -50%)';
+<script>
+/* Widget open/close */
+(function(){
+  var widget=document.getElementById('weather-widget');
+  var overlay=document.getElementById('dash-overlay');
+  var backdrop=document.getElementById('dash-backdrop');
+  var closeBtn=document.getElementById('dash-close');
+  function open(){ overlay.classList.add('open'); backdrop.classList.add('open'); }
+  function close(){ overlay.classList.remove('open'); backdrop.classList.remove('open'); }
+  widget.addEventListener('click', open);
+  widget.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  var startY=0, sheet=document.getElementById('dash-sheet');
+  sheet.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;},{passive:true});
+  sheet.addEventListener('touchend',function(e){ if(e.changedTouches[0].clientY-startY>80) close(); },{passive:true});
+})();
+
+/* Live temp in widget */
+(async function(){
+  try{
+    var r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=19.4326&longitude=-99.1332&current=temperature_2m,weathercode,precipitation_probability&timezone=America%2FMexico_City',{cache:'no-store'});
+    var j=await r.json();
+    var temp=Math.round(j.current.temperature_2m), rain=j.current.precipitation_probability||0, code=j.current.weathercode;
+    var cond=code>=95?'Tormenta':code>=51?'Llovizna':code>=45?'Neblina':code===3?'Nublado':code<=2?'Parc. nublado':'Despejado';
+    document.getElementById('w-temp-val').textContent=temp+'°C';
+    document.getElementById('w-cond-val').textContent=cond+' · '+rain+'% lluvia';
+    document.getElementById('w-badge-val').textContent=rain+'%';
+  }catch(e){}
+})();
+
+/* Position widget below HUD */
+(function(){
+  function pos(){
+    var hud=document.getElementById('hud'), w=document.getElementById('weather-widget');
+    if(!hud||!w) return;
+    w.style.top=(hud.offsetTop+hud.offsetHeight+14)+'px';
+    w.style.left='14px'; w.style.bottom='auto'; w.style.right='auto';
   }
-
-  // Esperar que p5 cargue el canvas
-  /* Run after p5 loads canvas */
-  var attempts = 0;
-  var interval = setInterval(function() {
-    squareCanvas();
-    positionWidget();
-    attempts++;
-    if (attempts > 30) clearInterval(interval);
-    if (document.querySelector('canvas') && hud) {
-      squareCanvas();
-      positionWidget();
-      clearInterval(interval);
-    }
-  }, 120);
-
-  window.addEventListener('resize', function() {
-    squareCanvas();
-    positionWidget();
-  });
+  function sq(){
+    if(window.innerWidth>640) return;
+    var c=document.querySelector('canvas'); if(!c) return;
+    var s=window.innerWidth; c.style.width=s+'px';c.style.height=s+'px';
+    c.style.position='fixed';c.style.top='50%';c.style.left='50%';c.style.transform='translate(-50%,-50%)';
+  }
+  var n=0,iv=setInterval(function(){sq();pos();if(++n>30)clearInterval(iv);},120);
+  window.addEventListener('resize',function(){sq();pos();});
 })();
 </script>
 </body>
